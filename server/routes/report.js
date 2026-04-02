@@ -1,8 +1,8 @@
 import { Router } from 'express'
-import Anthropic from '@anthropic-ai/sdk'
+import Groq from 'groq-sdk'
 
 const router = Router()
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+const client = new Groq({ apiKey: process.env.GROQ_API_KEY })
 
 const TOO_SHORT_REPORT = (personaName) => ({
   overall: 0,
@@ -28,8 +28,8 @@ router.post('/generate-report', async (req, res) => {
     return res.json({ report: TOO_SHORT_REPORT(personaName) })
   }
 
-  if (!process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY === 'your_anthropic_api_key_here') {
-    return res.status(500).json({ error: 'ANTHROPIC_API_KEY is not configured on the server.' })
+  if (!process.env.GROQ_API_KEY || process.env.GROQ_API_KEY === 'your_groq_api_key_here') {
+    return res.status(500).json({ error: 'GROQ_API_KEY is not configured on the server.' })
   }
 
   const formattedTranscript = transcript
@@ -40,8 +40,8 @@ router.post('/generate-report', async (req, res) => {
     .join('\n')
 
   try {
-    const message = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
+    const completion = await client.chat.completions.create({
+      model: 'llama-3.3-70b-versatile',
       max_tokens: 2048,
       messages: [
         {
@@ -80,7 +80,7 @@ Return ONLY a raw JSON object, no markdown, no backticks:
       ]
     })
 
-    const raw = message.content[0].text.trim()
+    const raw = completion.choices[0].message.content.trim()
     let report
 
     try {
