@@ -90,12 +90,14 @@ export function useVapi({ persona, onCallEnd, onTranscriptUpdate }) {
     setCallStatus('connecting')
     setError(null)
 
-    const systemPrompt = `You are ${persona.name}, ${persona.role} at ${persona.company}. Personality: ${persona.style} Traits: ${persona.traits.join(', ')}. Concerns: ${persona.pressure_points.join(', ')}. Objections to raise one at a time: ${persona.objections.join(' | ')}. Rules: stay in character, never admit you are AI, answer sounding busy, keep replies to 1-2 sentences max, push back on weak points, only agree to next step if earned. Difficulty: ${persona.difficulty}. CRITICAL: You are speaking out loud on a phone call. NEVER write action words, stage directions, or descriptions like "sigh", "laughs", "hangs up", "pauses", or anything in asterisks like *sigh*. Only output the actual words you would say. Express emotion through your word choice and tone, not descriptions.`
+    const systemPrompt = `${persona.name}, ${persona.role} at ${persona.company}. Style: ${persona.style}. Traits: ${persona.traits.join(', ')}. Concerns: ${persona.pressure_points.join(', ')}. Raise objections: ${persona.objections.join(' | ')}. Rules: stay in character, 1-2 sentences max, speak naturally (no actions like "sigh" or "*pauses*"), push back on weak points, only agree to next step if earned. Difficulty: ${persona.difficulty}.`
 
     const assistantConfig = {
       model: {
         provider: 'anthropic',
         model: 'claude-haiku-3-5-20251001',
+        temperature: 0.4,
+        maxTokens: 80,
         messages: [
           {
             role: 'system',
@@ -108,7 +110,7 @@ export function useVapi({ persona, onCallEnd, onTranscriptUpdate }) {
         voiceId: 'aura-asteria-en'
       },
       firstMessage: `${persona.name} speaking.`,
-      endCallMessage: "I have to jump. Thanks.",
+      endCallMessage: "I have to jump.",
       transcriber: {
         provider: 'deepgram',
         model: 'nova-3',
