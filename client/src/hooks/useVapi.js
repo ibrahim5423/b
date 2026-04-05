@@ -90,30 +90,12 @@ export function useVapi({ persona, onCallEnd, onTranscriptUpdate }) {
     setCallStatus('connecting')
     setError(null)
 
-    const systemPrompt = `You are ${persona.name}, ${persona.role} at ${persona.company}.
-You are a realistic B2B sales prospect in a live roleplay session.
-
-Your personality: ${persona.style}
-Your traits: ${persona.traits.join(', ')}
-Your main concerns: ${persona.pressure_points.join(', ')}
-
-Objections you will raise during this call:
-${persona.objections.map((o, i) => `${i + 1}. ${o}`).join('\n')}
-
-Strict rules:
-- Stay in character at all times. Never break persona or mention you are an AI.
-- Start by answering the call — sound busy and slightly distracted.
-- Raise objections naturally one at a time, not all at once.
-- If the rep makes a strong point, acknowledge it but stay skeptical.
-- If they make a weak point, push back firmly.
-- Only agree to a next step if they have genuinely earned it through the conversation.
-- Keep responses short — 1 to 3 sentences max. Real prospects do not monologue.
-- Difficulty level: ${persona.difficulty}`
+    const systemPrompt = `You are ${persona.name}, ${persona.role} at ${persona.company}. Personality: ${persona.style} Traits: ${persona.traits.join(', ')}. Concerns: ${persona.pressure_points.join(', ')}. Objections to raise one at a time: ${persona.objections.join(' | ')}. Rules: stay in character, never admit you are AI, answer sounding busy, keep replies to 1-2 sentences max, push back on weak points, only agree to next step if earned. Difficulty: ${persona.difficulty}.`
 
     const assistantConfig = {
       model: {
-        provider: 'anthropic',
-        model: 'claude-sonnet-4-20250514',
+        provider: 'groq',
+        model: 'llama-3.3-70b-versatile',
         messages: [
           {
             role: 'system',
@@ -122,14 +104,14 @@ Strict rules:
         ]
       },
       voice: {
-        provider: '11labs',
-        voiceId: '21m00Tcm4TlvDq8ikWAM'
+        provider: 'deepgram',
+        voiceId: 'aura-asteria-en'
       },
       firstMessage: `${persona.name} speaking.`,
       endCallMessage: "I have to jump. Thanks.",
       transcriber: {
         provider: 'deepgram',
-        model: 'nova-2',
+        model: 'nova-3',
         language: 'en-US'
       }
     }
