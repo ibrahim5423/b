@@ -94,8 +94,8 @@ export function useVapi({ persona, onCallEnd, onTranscriptUpdate }) {
 
     const assistantConfig = {
       model: {
-        provider: 'anthropic',
-        model: 'claude-haiku-3-5-20251001',
+        provider: 'groq',
+        model: 'llama-3.1-8b-instant',
         temperature: 0.4,
         maxTokens: 80,
         messages: [
