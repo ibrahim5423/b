@@ -93,7 +93,7 @@ export default function Session({ persona, onSessionEnd }) {
     onSessionEnd(finalMessages, elapsedRef.current, { ...vapiMeta, localRecordingUrl: recordingUrl })
   }, [onSessionEnd])
 
-  const { callStatus, isSpeaking, isAiSpeaking, isMuted, partialTranscript, messages, error, startCall, stopCall, toggleMute, hasVapiKey } = useVapi({
+  const { callStatus, isSpeaking, isAiSpeaking, isMuted, partialTranscript, messages, error, startCall, stopCall, toggleMute, hasVapiKey, getMessages } = useVapi({
     persona,
     onCallEnd: handleCallEnd,
     onTranscriptUpdate: null
@@ -158,16 +158,16 @@ export default function Session({ persona, onSessionEnd }) {
   async function handleEndSession() {
     if (hasEndedRef.current) return
     stopCall()
-    // Give VAPI ~600ms to fire call-end (which triggers handleCallEnd with recording)
-    // Fallback if it never fires
+    // Give VAPI 2500ms to fire call-end (handleCallEnd uses live messagesRef).
+    // Fallback uses getMessages() — always reads the live ref, never stale state.
     setTimeout(async () => {
       if (!hasEndedRef.current) {
         hasEndedRef.current = true
         clearInterval(timerRef.current)
         const recordingUrl = await stopRecorder()
-        onSessionEnd(messages, elapsedRef.current, { localRecordingUrl: recordingUrl })
+        onSessionEnd(getMessages(), elapsedRef.current, { localRecordingUrl: recordingUrl })
       }
-    }, 600)
+    }, 2500)
   }
 
   if (!persona) return null

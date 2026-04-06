@@ -231,6 +231,8 @@ STRICT RULES:
     startCall,
     stopCall,
     toggleMute,
-    hasVapiKey: !!(vapiKey && vapiKey !== 'your_vapi_public_key_here')
+    hasVapiKey: !!(vapiKey && vapiKey !== 'your_vapi_public_key_here'),
+    // Always returns live messages from ref, not stale React state
+    getMessages: () => messagesRef.current
   }
 }
