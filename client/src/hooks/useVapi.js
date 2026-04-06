@@ -106,8 +106,8 @@ export function useVapi({ persona, onCallEnd, onTranscriptUpdate }) {
         ]
       },
       voice: {
-        provider: 'deepgram',
-        voiceId: 'aura-asteria-en'
+        provider: 'vapi',
+        voiceId: 'Clara'
       },
       firstMessage: `${persona.name} speaking.`,
       endCallMessage: "I have to jump.",
