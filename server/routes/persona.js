@@ -9,6 +9,8 @@ const FALLBACK_PERSONA = {
   role: 'VP of Sales',
   company: 'NovaTech Solutions',
   initials: 'SC',
+  gender: 'female',
+  region: 'western',
   traits: ['Direct', 'Data-driven', 'Time-poor'],
   objections: [
     "We already have a solution in place and switching costs are high.",
@@ -49,6 +51,8 @@ Return ONLY a raw JSON object with no markdown, no backticks, no explanation. Fi
   "role": string,
   "company": string,
   "initials": string (2 chars, uppercase),
+  "gender": "male" | "female",
+  "region": "western" | "indian" | "british" | "australian" | "middle_eastern" | "east_asian" | "african" | "latin_american",
   "traits": string[] (exactly 3),
   "objections": string[] (exactly 3),
   "pressure_points": string[] (exactly 2),
@@ -90,6 +94,9 @@ Return ONLY a raw JSON object with no markdown, no backticks, no explanation. Fi
       persona.difficulty = 'Medium'
     }
     if (!persona.style) persona.style = FALLBACK_PERSONA.style
+    if (!['male', 'female'].includes(persona.gender)) persona.gender = 'male'
+    const validRegions = ['western', 'indian', 'british', 'australian', 'middle_eastern', 'east_asian', 'african', 'latin_american']
+    if (!validRegions.includes(persona.region)) persona.region = 'western'
 
     res.json({ persona })
   } catch (err) {

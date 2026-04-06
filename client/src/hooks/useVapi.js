@@ -1,6 +1,51 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import Vapi from '@vapi-ai/web'
 
+function selectVoice(gender, region) {
+  const g = (gender || 'male').toLowerCase()
+  const r = (region || 'western').toLowerCase()
+
+  if (r === 'indian' || r === 'south_asian') {
+    return g === 'female'
+      ? { provider: 'azure', voiceId: 'en-IN-NeerjaNeural' }
+      : { provider: 'azure', voiceId: 'en-IN-PrabhatNeural' }
+  }
+  if (r === 'british' || r === 'uk') {
+    return g === 'female'
+      ? { provider: 'azure', voiceId: 'en-GB-SoniaNeural' }
+      : { provider: 'azure', voiceId: 'en-GB-RyanNeural' }
+  }
+  if (r === 'australian') {
+    return g === 'female'
+      ? { provider: 'azure', voiceId: 'en-AU-NatashaNeural' }
+      : { provider: 'azure', voiceId: 'en-AU-WilliamNeural' }
+  }
+  if (r === 'middle_eastern') {
+    return g === 'female'
+      ? { provider: 'azure', voiceId: 'en-US-AnaNeural' }
+      : { provider: 'azure', voiceId: 'en-US-BrandonNeural' }
+  }
+  if (r === 'east_asian') {
+    return g === 'female'
+      ? { provider: 'azure', voiceId: 'en-US-JaneNeural' }
+      : { provider: 'azure', voiceId: 'en-US-JasonNeural' }
+  }
+  if (r === 'african') {
+    return g === 'female'
+      ? { provider: 'azure', voiceId: 'en-US-MichelleNeural' }
+      : { provider: 'azure', voiceId: 'en-US-GuyNeural' }
+  }
+  if (r === 'latin_american') {
+    return g === 'female'
+      ? { provider: 'azure', voiceId: 'en-US-AmberNeural' }
+      : { provider: 'azure', voiceId: 'en-US-TonyNeural' }
+  }
+  // Default western
+  return g === 'female'
+    ? { provider: 'vapi', voiceId: 'Kylie' }
+    : { provider: 'vapi', voiceId: 'Elliot' }
+}
+
 export function useVapi({ persona, onCallEnd, onTranscriptUpdate }) {
   const vapiRef = useRef(null)
   const [callStatus, setCallStatus] = useState('idle')
@@ -105,6 +150,8 @@ export function useVapi({ persona, onCallEnd, onTranscriptUpdate }) {
 
     const systemPrompt = `${persona.name}, ${persona.role} at ${persona.company}. Style: ${persona.style}. Traits: ${persona.traits.join(', ')}. Concerns: ${persona.pressure_points.join(', ')}. Raise objections: ${persona.objections.join(' | ')}. Rules: stay in character, 1-2 sentences max, speak naturally (no actions like "sigh" or "*pauses*"), push back on weak points, only agree to next step if earned. Difficulty: ${persona.difficulty}.`
 
+    const voice = selectVoice(persona.gender, persona.region)
+
     const assistantConfig = {
       model: {
         provider: 'groq',
@@ -113,10 +160,7 @@ export function useVapi({ persona, onCallEnd, onTranscriptUpdate }) {
         maxTokens: 80,
         messages: [{ role: 'system', content: systemPrompt }]
       },
-      voice: {
-        provider: 'vapi',
-        voiceId: 'Elliot'
-      },
+      voice,
       firstMessage: `${persona.name} speaking.`,
       endCallMessage: "I have to jump.",
       transcriber: {
