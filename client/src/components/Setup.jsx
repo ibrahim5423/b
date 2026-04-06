@@ -3,9 +3,7 @@ import { useNavigate } from 'react-router-dom'
 
 function DifficultyBadge({ difficulty }) {
   const cls = difficulty?.toLowerCase() || 'medium'
-  return (
-    <span className={`difficulty-badge ${cls}`}>{difficulty}</span>
-  )
+  return <span className={`difficulty-badge ${cls}`}>{difficulty}</span>
 }
 
 function PersonaCard({ persona }) {
@@ -15,16 +13,14 @@ function PersonaCard({ persona }) {
     <div className="persona-card">
       <div className="persona-card-header">
         <div className="persona-avatar">{persona.initials}</div>
-        <div>
+        <div style={{ flex: 1 }}>
           <div className="persona-name">{persona.name}</div>
           <div className="persona-role">{persona.role} · {persona.company}</div>
         </div>
-        <div style={{ marginLeft: 'auto' }}>
-          <DifficultyBadge difficulty={persona.difficulty} />
-        </div>
+        <DifficultyBadge difficulty={persona.difficulty} />
       </div>
 
-      <div className="persona-meta" style={{ gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+      <div className="persona-meta" style={{ gridTemplateColumns: '1fr 1fr' }}>
         <div className="persona-section">
           <span className="persona-section-label">Traits</span>
           <div className="trait-tags">
@@ -39,8 +35,8 @@ function PersonaCard({ persona }) {
           <span className="persona-section-value">{persona.style}</span>
         </div>
 
-        <div className="persona-section" style={{ gridColumn: '1 / -1' }}>
-          <span className="persona-section-label">Objections</span>
+        <div className="persona-section" style={{ gridColumn: '1 / -1', borderRight: 'none' }}>
+          <span className="persona-section-label">Objections to expect</span>
           <ol className="objection-list">
             {persona.objections.map((o, i) => (
               <li key={i} data-num={`${i + 1}.`}>{o}</li>
@@ -48,7 +44,7 @@ function PersonaCard({ persona }) {
           </ol>
         </div>
 
-        <div className="persona-section" style={{ gridColumn: '1 / -1' }}>
+        <div className="persona-section" style={{ gridColumn: '1 / -1', borderRight: 'none', borderBottom: 'none' }}>
           <span className="persona-section-label">Pressure Points</span>
           <span className="persona-section-value">{persona.pressure_points.join(' · ')}</span>
         </div>
@@ -83,18 +79,13 @@ export default function Setup({ initialPersona, onPersonaReady }) {
 
       const data = await res.json()
 
-      if (!res.ok) {
-        throw new Error(data.error || `Server error ${res.status}`)
-      }
-
-      if (!data.persona) {
-        throw new Error('No persona returned from server.')
-      }
+      if (!res.ok) throw new Error(data.error || `Server error ${res.status}`)
+      if (!data.persona) throw new Error('No persona returned from server.')
 
       setPersona(data.persona)
       onPersonaReady(data.persona)
     } catch (err) {
-      setError(err.message || 'Failed to generate persona. Check that the server is running and ANTHROPIC_API_KEY is set.')
+      setError(err.message || 'Failed to generate persona. Check that the server is running.')
     } finally {
       setLoading(false)
     }
@@ -106,24 +97,24 @@ export default function Setup({ initialPersona, onPersonaReady }) {
 
   return (
     <div className="page">
-      <div className="logo">Bout.</div>
+      <div className="logo">Bout</div>
 
       {missingVapi && (
         <div className="banner banner-warn">
-          <strong>VAPI key missing.</strong> Add <code>VITE_VAPI_PUBLIC_KEY</code> to <code>client/.env</code> to enable voice sessions.
-          Get your key at vapi.ai → Dashboard → API Keys.
+          <strong>VAPI key missing.</strong> Add <code>VITE_VAPI_PUBLIC_KEY</code> to <code>client/.env</code> and restart.
         </div>
       )}
 
-      <h1 style={{ fontSize: '36px', lineHeight: 1.15, marginBottom: '40px', maxWidth: '540px' }}>
+      <div className="setup-subtitle">AI Sales Roleplay Trainer</div>
+      <h1 className="setup-headline">
         Train on the exact<br />person you're calling.
       </h1>
 
-      <form onSubmit={handleGenerate} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <form onSubmit={handleGenerate} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
         <textarea
           className="input-field"
           rows={3}
-          placeholder="Paste LinkedIn URL or describe your prospect (e.g. VP of Sales at a Series B SaaS company)"
+          placeholder="Paste a LinkedIn URL or describe your prospect — e.g. 'VP of Sales at a Series B SaaS company, skeptical, budget-conscious'"
           value={query}
           onChange={e => setQuery(e.target.value)}
           disabled={loading}
@@ -135,13 +126,11 @@ export default function Setup({ initialPersona, onPersonaReady }) {
           }}
         />
 
-        <div style={{ fontSize: '11px', color: 'var(--muted)' }}>
-          Paste a LinkedIn URL or describe a persona. Claude builds your opponent in seconds.
+        <div className="setup-hint">
+          Describe a persona or paste a LinkedIn URL. The AI builds your opponent in seconds.
         </div>
 
-        {error && (
-          <div className="banner banner-error">{error}</div>
-        )}
+        {error && <div className="banner banner-error">{error}</div>}
 
         <div>
           <button
@@ -164,13 +153,13 @@ export default function Setup({ initialPersona, onPersonaReady }) {
       {persona && <PersonaCard persona={persona} />}
 
       {persona && (
-        <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <button className="btn-primary" onClick={handleStart}>
-            Start Voice Session →
-          </button>
-          <div style={{ fontSize: '11px', color: 'var(--muted)' }}>
-            Make sure your microphone is enabled before starting
+        <div style={{ marginTop: '28px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div>
+            <button className="btn-primary" onClick={handleStart}>
+              Start Voice Session →
+            </button>
           </div>
+          <div className="setup-hint">Make sure your microphone is enabled before starting.</div>
         </div>
       )}
     </div>

@@ -7,12 +7,18 @@ function formatTime(seconds) {
   return `${m}:${s}`
 }
 
+function scoreColor(score) {
+  if (score >= 70) return 'var(--green)'
+  if (score >= 40) return 'var(--yellow)'
+  return 'var(--red)'
+}
+
 function ScoreBar({ score, animate }) {
   const [width, setWidth] = useState(0)
 
   useEffect(() => {
     if (animate) {
-      const t = setTimeout(() => setWidth(score), 100)
+      const t = setTimeout(() => setWidth(score), 120)
       return () => clearTimeout(t)
     } else {
       setWidth(score)
@@ -20,13 +26,14 @@ function ScoreBar({ score, animate }) {
   }, [score, animate])
 
   return (
-    <div className="progress-bar-track" style={{ height: 2, marginTop: 8, marginBottom: 4 }}>
+    <div className="progress-bar-track" style={{ height: 2, marginTop: 10, marginBottom: 4 }}>
       <div
         className="progress-bar-fill"
         style={{
           width: `${width}%`,
-          background: score >= 70 ? 'var(--green)' : score >= 40 ? 'var(--text)' : 'var(--red)',
-          transition: 'width 1.4s ease'
+          background: scoreColor(score),
+          transition: 'width 1.4s cubic-bezier(0.16, 1, 0.3, 1)',
+          boxShadow: `0 0 8px ${scoreColor(score)}40`
         }}
       />
     </div>
@@ -74,10 +81,7 @@ export default function Report({ persona, transcript, sessionDuration, existingR
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
-    if (!persona || !transcript) {
-      navigate('/')
-      return
-    }
+    if (!persona || !transcript) navigate('/')
   }, [])
 
   useEffect(() => {
@@ -130,25 +134,24 @@ export default function Report({ persona, transcript, sessionDuration, existingR
       ...report.scores.map(s => `  ${s.label}: ${s.score}/100 — ${s.note}`),
       ``,
       `Key Moments:`,
-      ...report.moments.map(m => `  [${m.type.toUpperCase()}] ${m.time} — ${m.label}\n  Said: "${m.said}"${m.rewrite ? `\n  Rewrite: "${m.rewrite}"` : ''}`),
+      ...report.moments.map(m =>
+        `  [${m.type.toUpperCase()}] ${m.time} — ${m.label}\n  Said: "${m.said}"${m.rewrite ? `\n  Rewrite: "${m.rewrite}"` : ''}`
+      ),
       ``,
       `Focus Drill: ${report.focus_title}`,
       report.focus_desc
     ]
     navigator.clipboard.writeText(lines.join('\n'))
-      .then(() => {
-        setCopied(true)
-        setTimeout(() => setCopied(false), 2000)
-      })
+      .then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000) })
       .catch(() => {})
   }
 
   if (loading) {
     return (
-      <div className="page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg)' }}>
         <div className="loading-center">
           <span className="spinner" style={{ width: 28, height: 28 }} />
-          <span className="loading-text">Analysing your session with Claude...</span>
+          <span className="loading-text">Analysing your session...</span>
           <span className="loading-subtext">This takes about 10 seconds</span>
         </div>
       </div>
@@ -158,19 +161,13 @@ export default function Report({ persona, transcript, sessionDuration, existingR
   if (error) {
     return (
       <div className="page">
-        <div className="logo">Bout.</div>
-        <div className="banner banner-error" style={{ marginTop: 32 }}>
-          {error}
-        </div>
-        <button
-          className="btn-primary"
-          style={{ marginTop: 16 }}
-          onClick={() => {
-            hasFetched.current = false
-            setError(null)
-            setLoading(true)
-          }}
-        >
+        <div className="logo">Bout</div>
+        <div className="banner banner-error" style={{ marginTop: 32 }}>{error}</div>
+        <button className="btn-primary" style={{ marginTop: 16 }} onClick={() => {
+          hasFetched.current = false
+          setError(null)
+          setLoading(true)
+        }}>
           Retry →
         </button>
         <div style={{ marginTop: 16 }}>
@@ -182,12 +179,17 @@ export default function Report({ persona, transcript, sessionDuration, existingR
 
   if (!report) return null
 
+  const overall = report.overall
+  const color = scoreColor(overall)
+
   return (
     <div style={{ background: 'var(--bg)', minHeight: '100vh' }}>
       {/* HEADER */}
       <div className="report-header">
         <div className="report-header-left">
-          <div className="persona-avatar">{persona?.initials || '??'}</div>
+          <div className="persona-avatar" style={{ width: 52, height: 52, fontSize: 16 }}>
+            {persona?.initials || '??'}
+          </div>
           <div className="report-persona-info">
             <div className="report-persona-name">{persona?.name}</div>
             <div className="report-persona-role">{persona?.role} · {persona?.company}</div>
@@ -196,17 +198,21 @@ export default function Report({ persona, transcript, sessionDuration, existingR
         </div>
 
         <div className="report-score-block">
-          <div className="report-score-number" style={{
-            color: report.overall >= 70 ? 'var(--green)' : report.overall >= 40 ? 'var(--text)' : 'var(--red)'
-          }}>
-            {report.overall}
+          <div
+            className="report-score-number"
+            style={{
+              color,
+              textShadow: `0 0 60px ${color}30`
+            }}
+          >
+            {overall}
           </div>
-          <div className="report-score-label">Overall Score</div>
+          <div className="report-score-label">/ 100</div>
         </div>
       </div>
 
       {/* VERDICT */}
-      <div className="report-verdict">{report.verdict}</div>
+      <div className="report-verdict">"{report.verdict}"</div>
 
       <div className="report-body">
         {/* DIMENSION SCORES */}
@@ -216,7 +222,9 @@ export default function Report({ persona, transcript, sessionDuration, existingR
             <div key={i} className="score-row">
               <div className="score-row-header">
                 <span>{s.label}</span>
-                <span className="score-row-num">{s.score}</span>
+                <span className="score-row-num" style={{ color: scoreColor(s.score) }}>
+                  {s.score}
+                </span>
               </div>
               <ScoreBar score={s.score} animate={animateBars} />
               <div className="score-row-note">{s.note}</div>
@@ -254,7 +262,7 @@ export default function Report({ persona, transcript, sessionDuration, existingR
           New Persona
         </button>
         <button className="btn-ghost" onClick={handleCopy}>
-          {copied ? 'Copied!' : 'Copy Report'}
+          {copied ? 'Copied ✓' : 'Copy Report'}
         </button>
       </div>
     </div>

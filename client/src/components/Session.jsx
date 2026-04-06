@@ -9,18 +9,42 @@ function formatTime(seconds) {
 }
 
 function getStatusLabel(callStatus, isSpeaking, isAiSpeaking) {
-  if (callStatus === 'idle') return { label: 'Not connected', dot: '' }
-  if (callStatus === 'connecting') return { label: 'Connecting', dot: 'connecting' }
-  if (callStatus === 'ended') return { label: 'Ended', dot: '' }
-  if (isSpeaking) return { label: 'You Speaking', dot: 'speaking' }
-  if (isAiSpeaking) return { label: 'AI Speaking', dot: 'speaking' }
+  if (callStatus === 'idle')       return { label: 'Not connected', dot: '' }
+  if (callStatus === 'connecting') return { label: 'Connecting',    dot: 'connecting' }
+  if (callStatus === 'ended')      return { label: 'Ended',         dot: '' }
+  if (isSpeaking)                  return { label: 'You Speaking',  dot: 'speaking' }
+  if (isAiSpeaking)                return { label: 'AI Speaking',   dot: 'speaking' }
   return { label: 'Live', dot: 'active' }
 }
 
 function getCoachingTip(talkRatio, messageCount) {
-  if (messageCount < 3) return "Open with a hook and a question — then stop talking."
-  if (talkRatio > 50) return "You're dominating. Ask a question and wait."
-  return "Good ratio. Go deeper — ask what this problem costs them."
+  if (messageCount < 3) return "Open with a strong hook, then ask one question and stop talking."
+  if (talkRatio > 55)   return "You're dominating. Ask a question and wait for the answer."
+  if (talkRatio > 45)   return "Slightly high. Slow down and let them talk."
+  return "Good ratio — go deeper. Ask what this problem costs them."
+}
+
+function MicIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+      <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+      <line x1="12" y1="19" x2="12" y2="23"/>
+      <line x1="8" y1="23" x2="16" y2="23"/>
+    </svg>
+  )
+}
+
+function MicMutedIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="1" y1="1" x2="23" y2="23"/>
+      <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/>
+      <path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"/>
+      <line x1="12" y1="19" x2="12" y2="23"/>
+      <line x1="8" y1="23" x2="16" y2="23"/>
+    </svg>
+  )
 }
 
 export default function Session({ persona, onSessionEnd }) {
@@ -34,7 +58,6 @@ export default function Session({ persona, onSessionEnd }) {
   const elapsedRef = useRef(0)
   const hasEndedRef = useRef(false)
 
-  // Redirect if no persona
   useEffect(() => {
     if (!persona) navigate('/')
   }, [persona, navigate])
@@ -52,26 +75,21 @@ export default function Session({ persona, onSessionEnd }) {
     onTranscriptUpdate: null
   })
 
-  // Auto-start call on mount
   useEffect(() => {
-    if (!persona) return
-    if (!hasVapiKey) return
-
+    if (!persona || !hasVapiKey) return
     const tryStart = async () => {
       try {
         await navigator.mediaDevices.getUserMedia({ audio: true })
         setMicError(null)
         setSessionStarted(true)
         startCall()
-      } catch (err) {
-        setMicError('Microphone access denied. Please allow microphone access in your browser settings and reload the page.')
+      } catch {
+        setMicError('Microphone access denied. Allow microphone access in your browser settings and reload.')
       }
     }
-
     tryStart()
   }, [persona, hasVapiKey])
 
-  // Timer
   useEffect(() => {
     if (callStatus === 'active') {
       timerRef.current = setInterval(() => {
@@ -84,16 +102,13 @@ export default function Session({ persona, onSessionEnd }) {
     return () => clearInterval(timerRef.current)
   }, [callStatus])
 
-  // Auto scroll
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
     }
   }, [messages, partialTranscript])
 
-  // Talk ratio calculation
   const userMessages = messages.filter(m => m.role === 'user')
-  const aiMessages = messages.filter(m => m.role === 'assistant')
   const userWordCount = userMessages.reduce((acc, m) => acc + (m.text?.split(' ').length || 0), 0)
   const totalWordCount = messages.reduce((acc, m) => acc + (m.text?.split(' ').length || 0), 0)
   const talkRatio = totalWordCount > 0 ? Math.round((userWordCount / totalWordCount) * 100) : 0
@@ -104,7 +119,6 @@ export default function Session({ persona, onSessionEnd }) {
   function handleEndSession() {
     if (hasEndedRef.current) return
     stopCall()
-    // Give VAPI a tick to fire call-end; fallback after 500ms
     setTimeout(() => {
       if (!hasEndedRef.current) {
         hasEndedRef.current = true
@@ -116,12 +130,18 @@ export default function Session({ persona, onSessionEnd }) {
 
   if (!persona) return null
 
+  const ratioColor = talkRatio > 55
+    ? 'var(--red)'
+    : talkRatio > 45
+    ? 'var(--yellow)'
+    : 'var(--green)'
+
   return (
     <div className="session-layout">
       {/* TOP BAR */}
       <div className="session-topbar">
         <div className="session-topbar-left">
-          <div className="persona-avatar" style={{ width: 38, height: 38, fontSize: 13 }}>
+          <div className="persona-avatar" style={{ width: 36, height: 36, fontSize: 12 }}>
             {persona.initials}
           </div>
           <div>
@@ -147,39 +167,33 @@ export default function Session({ persona, onSessionEnd }) {
       <div className="session-main">
         {/* LEFT: Transcript */}
         <div className="transcript-col">
-          {/* No-key or mic error states */}
           {!hasVapiKey && (
             <div className="mic-error">
               <p>VAPI Public Key not configured.</p>
-              <p style={{ marginTop: 8, fontSize: 12, color: 'var(--muted)' }}>
-                Add <code style={{ background: 'rgba(245,244,240,0.08)', padding: '2px 6px' }}>VITE_VAPI_PUBLIC_KEY</code> to <code style={{ background: 'rgba(245,244,240,0.08)', padding: '2px 6px' }}>client/.env</code> and restart.
+              <p style={{ marginTop: 8, fontSize: 11, color: 'var(--muted)' }}>
+                Add <code style={{ background: 'rgba(245,244,240,0.08)', padding: '2px 6px' }}>VITE_VAPI_PUBLIC_KEY</code> to{' '}
+                <code style={{ background: 'rgba(245,244,240,0.08)', padding: '2px 6px' }}>client/.env</code> and restart.
               </p>
             </div>
           )}
 
-          {micError && (
-            <div className="mic-error">
-              <p>{micError}</p>
-            </div>
-          )}
+          {micError && <div className="mic-error"><p>{micError}</p></div>}
 
           {error && !micError && (
-            <div className="banner banner-error" style={{ margin: '16px' }}>
-              {error}
-            </div>
+            <div className="banner banner-error" style={{ margin: '16px' }}>{error}</div>
           )}
 
           <div className="transcript-messages">
             {callStatus === 'connecting' && (
-              <div className="loading-center" style={{ padding: '40px 0' }}>
+              <div className="loading-center" style={{ padding: '60px 0' }}>
                 <span className="spinner" />
                 <span className="loading-text">Connecting to {persona.name}...</span>
               </div>
             )}
 
             {messages.length === 0 && callStatus === 'active' && (
-              <div style={{ color: 'var(--muted)', fontSize: 12, textAlign: 'center', paddingTop: 40 }}>
-                Session is live. Start talking.
+              <div style={{ color: 'var(--muted)', fontSize: 11, textAlign: 'center', paddingTop: 48, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                Session live — start talking
               </div>
             )}
 
@@ -194,12 +208,10 @@ export default function Session({ persona, onSessionEnd }) {
               </div>
             ))}
 
-            {/* Partial transcript */}
             {partialTranscript && (
               <div className="message-partial">{partialTranscript}</div>
             )}
 
-            {/* Typing indicator when AI is generating */}
             {isAiSpeaking && !partialTranscript && (
               <div className="typing-indicator">
                 <div className="typing-dot" />
@@ -214,25 +226,25 @@ export default function Session({ persona, onSessionEnd }) {
 
         {/* RIGHT: Live Metrics */}
         <div className="metrics-col">
-          {/* Talk Ratio */}
           <div className="metrics-block">
             <div className="metrics-block-label">Talk Ratio</div>
-            <div className="talk-ratio-number">{talkRatio}%</div>
+            <div className="talk-ratio-number" style={{ color: ratioColor }}>
+              {talkRatio}%
+            </div>
             <div className="progress-bar-track">
               <div
                 className="progress-bar-fill"
-                style={{ width: `${Math.min(talkRatio, 100)}%`, transition: 'width 0.5s ease' }}
+                style={{ width: `${Math.min(talkRatio, 100)}%`, transition: 'width 0.6s ease' }}
               />
               <div className="progress-bar-marker" style={{ left: '45%' }} />
             </div>
             <div className="talk-ratio-target">You · Target: &lt;45%</div>
           </div>
 
-          {/* Session Stats */}
           <div className="metrics-block">
             <div className="metrics-block-label">Session Stats</div>
             <div className="stat-row">
-              <span className="stat-label">Messages sent</span>
+              <span className="stat-label">Messages</span>
               <span className="stat-value">{userMessages.length}</span>
             </div>
             <div className="stat-row">
@@ -240,18 +252,21 @@ export default function Session({ persona, onSessionEnd }) {
               <span className="stat-value">{formatTime(elapsed)}</span>
             </div>
             <div className="stat-row">
-              <span className="stat-label">Connection</span>
+              <span className="stat-label">Status</span>
               <span className="stat-value" style={{
-                color: callStatus === 'active' ? 'var(--green)' : callStatus === 'connecting' ? 'var(--yellow)' : 'var(--muted)'
+                color: callStatus === 'active'
+                  ? 'var(--green)'
+                  : callStatus === 'connecting'
+                  ? 'var(--yellow)'
+                  : 'var(--muted)'
               }}>
                 {callStatus === 'active' ? 'Live' : callStatus === 'connecting' ? 'Connecting' : callStatus}
               </span>
             </div>
           </div>
 
-          {/* Coaching Tip */}
           <div className="metrics-block">
-            <div className="metrics-block-label">Coaching Tip</div>
+            <div className="metrics-block-label">Coaching</div>
             <div className="coaching-tip">{coachingTip}</div>
           </div>
         </div>
@@ -259,26 +274,31 @@ export default function Session({ persona, onSessionEnd }) {
 
       {/* BOTTOM BAR */}
       <div className="session-bottombar">
-        <button
-          className="btn-text"
-          onClick={handleEndSession}
-          style={{ fontSize: 12 }}
-        >
-          End &amp; Get Report
+        <button className="btn-text" onClick={handleEndSession}>
+          End &amp; Get Report →
         </button>
 
-        <button
-          className={`mic-btn ${isMuted ? 'muted' : isSpeaking ? 'speaking' : callStatus === 'active' ? 'active' : ''}`}
-          onClick={toggleMute}
-          title={isMuted ? 'Unmute' : 'Mute'}
-          disabled={callStatus !== 'active'}
-        >
-          {isMuted ? '🔇' : '🎙'}
-        </button>
+        <div className="mic-btn-wrapper">
+          {isSpeaking && !isMuted && (
+            <>
+              <span className="voice-ring ring-1" />
+              <span className="voice-ring ring-2" />
+              <span className="voice-ring ring-3" />
+            </>
+          )}
+          <button
+            className={`mic-btn ${isMuted ? 'muted' : isSpeaking ? 'speaking' : callStatus === 'active' ? 'active' : ''}`}
+            onClick={toggleMute}
+            title={isMuted ? 'Unmute' : 'Mute'}
+            disabled={callStatus !== 'active'}
+          >
+            {isMuted ? <MicMutedIcon /> : <MicIcon />}
+          </button>
+        </div>
 
         <textarea
           className="session-notes"
-          placeholder="Session notes..."
+          placeholder="Notes..."
           value={notes}
           onChange={e => setNotes(e.target.value)}
         />
