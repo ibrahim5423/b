@@ -176,8 +176,8 @@ STRICT RULES:
 
     const assistantConfig = {
       model: {
-        provider: 'groq',
-        model: 'llama-3.1-8b-instant',
+        provider: 'anthropic',
+        model: 'claude-haiku-3-5-20251001',
         temperature: 0.4,
         maxTokens: 80,
         messages: [{ role: 'system', content: systemPrompt }]
