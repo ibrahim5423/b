@@ -107,7 +107,7 @@ export function useVapi({ persona, onCallEnd, onTranscriptUpdate }) {
       },
       voice: {
         provider: 'vapi',
-        voiceId: 'Clara'
+        voiceId: 'Elliot'
       },
       firstMessage: `${persona.name} speaking.`,
       endCallMessage: "I have to jump.",
