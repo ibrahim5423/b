@@ -3,14 +3,15 @@ import Vapi from '@vapi-ai/web'
 
 export function useVapi({ persona, onCallEnd, onTranscriptUpdate }) {
   const vapiRef = useRef(null)
-  const [callStatus, setCallStatus] = useState('idle') // idle | connecting | active | ended
-  const [isSpeaking, setIsSpeaking] = useState(false)  // user speaking
+  const [callStatus, setCallStatus] = useState('idle')
+  const [isSpeaking, setIsSpeaking] = useState(false)
   const [isAiSpeaking, setIsAiSpeaking] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
   const [partialTranscript, setPartialTranscript] = useState('')
   const [messages, setMessages] = useState([])
   const [error, setError] = useState(null)
   const messagesRef = useRef([])
+  const callMetaRef = useRef({})  // stores recordingUrl, callId from VAPI events
 
   const vapiKey = import.meta.env.VITE_VAPI_PUBLIC_KEY
 
@@ -23,11 +24,12 @@ export function useVapi({ persona, onCallEnd, onTranscriptUpdate }) {
     vapi.on('call-start', () => {
       setCallStatus('active')
       setError(null)
+      callMetaRef.current = {}
     })
 
     vapi.on('call-end', () => {
       setCallStatus('ended')
-      if (onCallEnd) onCallEnd(messagesRef.current)
+      if (onCallEnd) onCallEnd(messagesRef.current, callMetaRef.current)
     })
 
     vapi.on('speech-start', () => {
@@ -57,7 +59,17 @@ export function useVapi({ persona, onCallEnd, onTranscriptUpdate }) {
         }
       }
 
-      // Detect when AI is generating/speaking
+      // Capture end-of-call metadata: recording URL, call ID, summary
+      if (msg.type === 'end-of-call-report') {
+        callMetaRef.current = {
+          recordingUrl: msg.artifact?.recordingUrl || msg.recordingUrl || null,
+          stereoRecordingUrl: msg.artifact?.stereoRecordingUrl || null,
+          callId: msg.call?.id || null,
+          summary: msg.analysis?.summary || null,
+          endedReason: msg.endedReason || null
+        }
+      }
+
       if (msg.type === 'voice-input') {
         setIsAiSpeaking(msg.status === 'started')
       }
@@ -85,6 +97,7 @@ export function useVapi({ persona, onCallEnd, onTranscriptUpdate }) {
     }
 
     messagesRef.current = []
+    callMetaRef.current = {}
     setMessages([])
     setPartialTranscript('')
     setCallStatus('connecting')
@@ -98,12 +111,7 @@ export function useVapi({ persona, onCallEnd, onTranscriptUpdate }) {
         model: 'llama-3.1-8b-instant',
         temperature: 0.4,
         maxTokens: 80,
-        messages: [
-          {
-            role: 'system',
-            content: systemPrompt
-          }
-        ]
+        messages: [{ role: 'system', content: systemPrompt }]
       },
       voice: {
         provider: 'vapi',
@@ -115,6 +123,10 @@ export function useVapi({ persona, onCallEnd, onTranscriptUpdate }) {
         provider: 'deepgram',
         model: 'nova-3',
         language: 'en-US'
+      },
+      artifactPlan: {
+        recordingEnabled: true,
+        videoRecordingEnabled: false
       }
     }
 

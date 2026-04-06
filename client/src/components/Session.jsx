@@ -51,7 +51,6 @@ export default function Session({ persona, onSessionEnd }) {
   const navigate = useNavigate()
   const [elapsed, setElapsed] = useState(0)
   const [notes, setNotes] = useState('')
-  const [sessionStarted, setSessionStarted] = useState(false)
   const [micError, setMicError] = useState(null)
   const messagesEndRef = useRef(null)
   const timerRef = useRef(null)
@@ -62,11 +61,11 @@ export default function Session({ persona, onSessionEnd }) {
     if (!persona) navigate('/')
   }, [persona, navigate])
 
-  const handleCallEnd = useCallback((finalMessages) => {
+  const handleCallEnd = useCallback((finalMessages, meta) => {
     if (hasEndedRef.current) return
     hasEndedRef.current = true
     clearInterval(timerRef.current)
-    onSessionEnd(finalMessages, elapsedRef.current)
+    onSessionEnd(finalMessages, elapsedRef.current, meta)
   }, [onSessionEnd])
 
   const { callStatus, isSpeaking, isAiSpeaking, isMuted, partialTranscript, messages, error, startCall, stopCall, toggleMute, hasVapiKey } = useVapi({
@@ -81,7 +80,6 @@ export default function Session({ persona, onSessionEnd }) {
       try {
         await navigator.mediaDevices.getUserMedia({ audio: true })
         setMicError(null)
-        setSessionStarted(true)
         startCall()
       } catch {
         setMicError('Microphone access denied. Allow microphone access in your browser settings and reload.')
@@ -123,18 +121,14 @@ export default function Session({ persona, onSessionEnd }) {
       if (!hasEndedRef.current) {
         hasEndedRef.current = true
         clearInterval(timerRef.current)
-        onSessionEnd(messages, elapsedRef.current)
+        onSessionEnd(messages, elapsedRef.current, {})
       }
     }, 500)
   }
 
   if (!persona) return null
 
-  const ratioColor = talkRatio > 55
-    ? 'var(--red)'
-    : talkRatio > 45
-    ? 'var(--yellow)'
-    : 'var(--green)'
+  const ratioColor = talkRatio > 55 ? 'var(--red)' : talkRatio > 45 ? 'var(--yellow)' : 'var(--green)'
 
   return (
     <div className="session-layout">
@@ -157,15 +151,12 @@ export default function Session({ persona, onSessionEnd }) {
             <span className={`status-dot ${statusInfo.dot}`} />
             {statusInfo.label}
           </div>
-          <button className="btn-danger" onClick={handleEndSession}>
-            End Session
-          </button>
+          <button className="btn-danger" onClick={handleEndSession}>End Session</button>
         </div>
       </div>
 
       {/* MAIN */}
       <div className="session-main">
-        {/* LEFT: Transcript */}
         <div className="transcript-col">
           {!hasVapiKey && (
             <div className="mic-error">
@@ -176,9 +167,7 @@ export default function Session({ persona, onSessionEnd }) {
               </p>
             </div>
           )}
-
           {micError && <div className="mic-error"><p>{micError}</p></div>}
-
           {error && !micError && (
             <div className="banner banner-error" style={{ margin: '16px' }}>{error}</div>
           )}
@@ -190,36 +179,23 @@ export default function Session({ persona, onSessionEnd }) {
                 <span className="loading-text">Connecting to {persona.name}...</span>
               </div>
             )}
-
             {messages.length === 0 && callStatus === 'active' && (
               <div style={{ color: 'var(--muted)', fontSize: 11, textAlign: 'center', paddingTop: 48, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
                 Session live — start talking
               </div>
             )}
-
             {messages.map((msg, i) => (
               <div key={i} className={`message-row ${msg.role}`}>
-                <span className="message-label">
-                  {msg.role === 'user' ? 'You' : persona.name}
-                </span>
-                <div className={`message-bubble ${msg.role}`}>
-                  {msg.text}
-                </div>
+                <span className="message-label">{msg.role === 'user' ? 'You' : persona.name}</span>
+                <div className={`message-bubble ${msg.role}`}>{msg.text}</div>
               </div>
             ))}
-
-            {partialTranscript && (
-              <div className="message-partial">{partialTranscript}</div>
-            )}
-
+            {partialTranscript && <div className="message-partial">{partialTranscript}</div>}
             {isAiSpeaking && !partialTranscript && (
               <div className="typing-indicator">
-                <div className="typing-dot" />
-                <div className="typing-dot" />
-                <div className="typing-dot" />
+                <div className="typing-dot" /><div className="typing-dot" /><div className="typing-dot" />
               </div>
             )}
-
             <div ref={messagesEndRef} />
           </div>
         </div>
@@ -228,14 +204,9 @@ export default function Session({ persona, onSessionEnd }) {
         <div className="metrics-col">
           <div className="metrics-block">
             <div className="metrics-block-label">Talk Ratio</div>
-            <div className="talk-ratio-number" style={{ color: ratioColor }}>
-              {talkRatio}%
-            </div>
+            <div className="talk-ratio-number" style={{ color: ratioColor }}>{talkRatio}%</div>
             <div className="progress-bar-track">
-              <div
-                className="progress-bar-fill"
-                style={{ width: `${Math.min(talkRatio, 100)}%`, transition: 'width 0.6s ease' }}
-              />
+              <div className="progress-bar-fill" style={{ width: `${Math.min(talkRatio, 100)}%`, transition: 'width 0.6s ease' }} />
               <div className="progress-bar-marker" style={{ left: '45%' }} />
             </div>
             <div className="talk-ratio-target">You · Target: &lt;45%</div>
@@ -253,13 +224,7 @@ export default function Session({ persona, onSessionEnd }) {
             </div>
             <div className="stat-row">
               <span className="stat-label">Status</span>
-              <span className="stat-value" style={{
-                color: callStatus === 'active'
-                  ? 'var(--green)'
-                  : callStatus === 'connecting'
-                  ? 'var(--yellow)'
-                  : 'var(--muted)'
-              }}>
+              <span className="stat-value" style={{ color: callStatus === 'active' ? 'var(--green)' : callStatus === 'connecting' ? 'var(--yellow)' : 'var(--muted)' }}>
                 {callStatus === 'active' ? 'Live' : callStatus === 'connecting' ? 'Connecting' : callStatus}
               </span>
             </div>
@@ -274,9 +239,7 @@ export default function Session({ persona, onSessionEnd }) {
 
       {/* BOTTOM BAR */}
       <div className="session-bottombar">
-        <button className="btn-text" onClick={handleEndSession}>
-          End &amp; Get Report →
-        </button>
+        <button className="btn-text" onClick={handleEndSession}>End &amp; Get Report →</button>
 
         <div className="mic-btn-wrapper">
           {isSpeaking && !isMuted && (
