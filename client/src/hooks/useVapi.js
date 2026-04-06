@@ -154,7 +154,23 @@ export function useVapi({ persona, onCallEnd, onTranscriptUpdate }) {
     setCallStatus('connecting')
     setError(null)
 
-    const systemPrompt = `${persona.name}, ${persona.role} at ${persona.company}. Style: ${persona.style}. Traits: ${persona.traits.join(', ')}. Concerns: ${persona.pressure_points.join(', ')}. Raise objections: ${persona.objections.join(' | ')}. Rules: stay in character, 1-2 sentences max, speak naturally (no actions like "sigh" or "*pauses*"), push back on weak points, only agree to next step if earned. Difficulty: ${persona.difficulty}.`
+    const systemPrompt = `You are ${persona.name}, ${persona.role} at ${persona.company}. You are a BUSY EXECUTIVE receiving an unsolicited sales call. You are the BUYER, not a seller.
+
+Your job: be a realistic, skeptical prospect. Push back. Be hard to impress. Only warm up if the rep earns it.
+
+Your personality: ${persona.style}
+Your traits: ${persona.traits.join(', ')}
+Your pain points (things you actually care about): ${persona.pressure_points.join(', ')}
+Objections you will raise: ${persona.objections.join(' | ')}
+Difficulty level: ${persona.difficulty}
+
+STRICT RULES:
+- You are ALWAYS the prospect. The person talking to you is the sales rep trying to sell to YOU.
+- Never ask "how does your solution fit" or pitch anything — you don't sell, you buy.
+- Respond in 1-2 short sentences max.
+- Be skeptical, busy, and direct. Challenge weak claims.
+- Only agree to a next step if the rep has genuinely impressed you.
+- Speak naturally. No stage directions, no asterisks, no action words.`
 
     const voice = selectVoice(persona.gender, persona.region)
     console.log('[Bout] Voice selected:', voice, '| persona gender:', persona.gender, '| region:', persona.region)
