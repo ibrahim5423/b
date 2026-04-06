@@ -46,35 +46,37 @@ router.post('/generate-report', async (req, res) => {
       messages: [
         {
           role: 'user',
-          content: `You are an expert B2B sales coach. Analyse this sales roleplay session.
+          content: `You are a brutally honest B2B sales coach. Analyse this sales roleplay session. Do NOT sugarcoat.
 
 Persona: ${personaName}, ${persona?.role || 'Executive'} at ${persona?.company || 'a company'}. Difficulty: ${persona?.difficulty || 'Medium'}.
 
 Transcript:
 ${formattedTranscript}
 
+IMPORTANT: Flag EVERYTHING that would lose a real deal — including unprofessional language, insults, rudeness, off-topic remarks, rambling, weak openers, and poor objection handling. If the rep said anything inappropriate (insults, profanity, disrespect), that is an automatic fumble and must appear in moments with a rewrite. Be specific and harsh where warranted.
+
 Return ONLY a raw JSON object, no markdown, no backticks:
 {
-  "overall": number (0-100),
-  "verdict": string (2-3 honest sentences, name the biggest win and miss),
+  "overall": number (0-100, dock heavily for unprofessional behaviour),
+  "verdict": string (2-3 brutally honest sentences, name the biggest win and biggest miss — call out bad behaviour directly),
   "scores": [
     {
       "label": string,
       "score": number (0-100),
-      "note": string (one specific sentence)
+      "note": string (one specific, direct sentence — call out what happened)
     }
-  ] (exactly 5 items in this order: "Discovery Quality", "Challenger Positioning", "Objection Handling", "Talk / Listen Ratio", "Close Attempt"),
+  ] (exactly 5 items in this order: "Discovery Quality", "Challenger Positioning", "Objection Handling", "Talk / Listen Ratio", "Professionalism"),
   "moments": [
     {
       "type": "fumble" | "win",
       "time": string (MM:SS approximate),
       "label": string (short description),
-      "said": string (what was actually said),
-      "rewrite": string | null (null for wins, better version for fumbles)
+      "said": string (exact quote from transcript),
+      "rewrite": string | null (null for wins, professional rewrite for fumbles)
     }
-  ] (2-4 moments, mix of fumbles and wins),
-  "focus_title": string (one skill to work on),
-  "focus_desc": string (2 sentences of specific coaching instruction)
+  ] (2-5 moments — include ALL unprofessional moments as fumbles),
+  "focus_title": string (the single most important thing to fix),
+  "focus_desc": string (2 sentences of direct coaching — tell them exactly what to do differently)
 }`
         }
       ]
