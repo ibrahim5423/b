@@ -45,14 +45,16 @@ router.post('/generate-persona', async (req, res) => {
           role: 'user',
           content: `Generate a realistic B2B sales prospect persona based on: ${query.trim()}
 
+IMPORTANT: The "gender" and "region" fields control the AI voice during roleplay. You MUST set them accurately based on the persona's name and background. For example: an Indian name like "Rajesh" → gender "male", region "indian". A British name like "Charlotte" → gender "female", region "british".
+
 Return ONLY a raw JSON object with no markdown, no backticks, no explanation. Fields:
 {
-  "name": string,
+  "name": string (a culturally appropriate full name),
   "role": string,
   "company": string,
   "initials": string (2 chars, uppercase),
-  "gender": "male" | "female",
-  "region": "western" | "indian" | "british" | "australian" | "middle_eastern" | "east_asian" | "african" | "latin_american",
+  "gender": "male" | "female" (REQUIRED — must match the name),
+  "region": "western" | "indian" | "british" | "australian" | "middle_eastern" | "east_asian" | "african" | "latin_american" (REQUIRED — must match the persona's cultural background),
   "traits": string[] (exactly 3),
   "objections": string[] (exactly 3),
   "pressure_points": string[] (exactly 2),

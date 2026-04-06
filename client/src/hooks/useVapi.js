@@ -56,7 +56,13 @@ export function useVapi({ persona, onCallEnd, onTranscriptUpdate }) {
   const [messages, setMessages] = useState([])
   const [error, setError] = useState(null)
   const messagesRef = useRef([])
-  const callMetaRef = useRef({})  // stores recordingUrl, callId from VAPI events
+  const callMetaRef = useRef({})
+
+  // Use refs for callbacks to avoid stale closure in VAPI event handlers
+  const onCallEndRef = useRef(onCallEnd)
+  const onTranscriptUpdateRef = useRef(onTranscriptUpdate)
+  useEffect(() => { onCallEndRef.current = onCallEnd }, [onCallEnd])
+  useEffect(() => { onTranscriptUpdateRef.current = onTranscriptUpdate }, [onTranscriptUpdate])
 
   const vapiKey = import.meta.env.VITE_VAPI_PUBLIC_KEY
 
@@ -74,7 +80,8 @@ export function useVapi({ persona, onCallEnd, onTranscriptUpdate }) {
 
     vapi.on('call-end', () => {
       setCallStatus('ended')
-      if (onCallEnd) onCallEnd(messagesRef.current, callMetaRef.current)
+      // Use ref to get the latest callback — avoids stale closure
+      if (onCallEndRef.current) onCallEndRef.current(messagesRef.current, callMetaRef.current)
     })
 
     vapi.on('speech-start', () => {
@@ -100,11 +107,10 @@ export function useVapi({ persona, onCallEnd, onTranscriptUpdate }) {
           messagesRef.current = [...messagesRef.current, newMessage]
           setMessages(prev => [...prev, newMessage])
           setPartialTranscript('')
-          if (onTranscriptUpdate) onTranscriptUpdate(messagesRef.current)
+          if (onTranscriptUpdateRef.current) onTranscriptUpdateRef.current(messagesRef.current)
         }
       }
 
-      // Capture end-of-call metadata: recording URL, call ID, summary
       if (msg.type === 'end-of-call-report') {
         callMetaRef.current = {
           recordingUrl: msg.artifact?.recordingUrl || msg.recordingUrl || null,
@@ -151,6 +157,7 @@ export function useVapi({ persona, onCallEnd, onTranscriptUpdate }) {
     const systemPrompt = `${persona.name}, ${persona.role} at ${persona.company}. Style: ${persona.style}. Traits: ${persona.traits.join(', ')}. Concerns: ${persona.pressure_points.join(', ')}. Raise objections: ${persona.objections.join(' | ')}. Rules: stay in character, 1-2 sentences max, speak naturally (no actions like "sigh" or "*pauses*"), push back on weak points, only agree to next step if earned. Difficulty: ${persona.difficulty}.`
 
     const voice = selectVoice(persona.gender, persona.region)
+    console.log('[Bout] Voice selected:', voice, '| persona gender:', persona.gender, '| region:', persona.region)
 
     const assistantConfig = {
       model: {

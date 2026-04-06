@@ -24,7 +24,7 @@ router.post('/generate-report', async (req, res) => {
 
   const personaName = persona?.name || 'Prospect'
 
-  if (!Array.isArray(transcript) || transcript.length < 4) {
+  if (!Array.isArray(transcript) || transcript.length < 2) {
     return res.json({ report: TOO_SHORT_REPORT(personaName) })
   }
 
