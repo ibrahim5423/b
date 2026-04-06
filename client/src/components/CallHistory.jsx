@@ -162,32 +162,30 @@ function CallDetails({ call }) {
 
       {tab === 'recording' && (
         <div>
-          {call.meta?.recordingUrl ? (
+          {call.meta?.localRecordingUrl ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ fontSize: 10, color: 'var(--muted)', letterSpacing: '0.04em' }}>
+                Your mic · recorded locally
+              </div>
               <audio
                 controls
-                src={call.meta.recordingUrl}
-                style={{ width: '100%', height: 36, filter: 'invert(1) hue-rotate(180deg)', outline: 'none' }}
+                src={call.meta.localRecordingUrl}
+                style={{ width: '100%', height: 36, outline: 'none' }}
               />
-              <a
-                href={call.meta.recordingUrl}
-                target="_blank"
-                rel="noreferrer"
-                style={{ fontSize: 11, color: 'var(--muted)', textDecoration: 'underline', textDecorationColor: 'var(--border)' }}
-              >
-                Open recording ↗
-              </a>
+              <div style={{ fontSize: 10, color: 'var(--muted)', lineHeight: 1.6 }}>
+                Note: recording is available this session only — it clears on page refresh.
+              </div>
               {call.meta.callId && (
                 <div style={{ fontSize: 10, color: 'var(--muted)', fontFamily: 'DM Mono, monospace' }}>
-                  Call ID: {call.meta.callId}
+                  VAPI Call ID: {call.meta.callId}
                 </div>
               )}
             </div>
           ) : (
-            <div style={{ color: 'var(--muted)', fontSize: 11, lineHeight: 1.7 }}>
-              No recording available.
-              <br />
-              Recording is stored by VAPI if <code style={{ background: 'rgba(255,255,255,0.06)', padding: '1px 5px' }}>recordingEnabled</code> is set in your VAPI dashboard plan.
+            <div style={{ color: 'var(--muted)', fontSize: 11, lineHeight: 1.8 }}>
+              No recording available for this call.
+              <br /><br />
+              Recordings are captured automatically from your next session.
             </div>
           )}
         </div>

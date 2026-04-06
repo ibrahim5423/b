@@ -57,15 +57,40 @@ export default function Session({ persona, onSessionEnd }) {
   const elapsedRef = useRef(0)
   const hasEndedRef = useRef(false)
 
+  // Local recording refs
+  const mediaRecorderRef = useRef(null)
+  const audioChunksRef = useRef([])
+  const localRecordingUrlRef = useRef(null)
+
   useEffect(() => {
     if (!persona) navigate('/')
   }, [persona, navigate])
 
-  const handleCallEnd = useCallback((finalMessages, meta) => {
+  // Stop MediaRecorder and return a blob URL (resolves in ~1s max)
+  function stopRecorder() {
+    return new Promise((resolve) => {
+      const recorder = mediaRecorderRef.current
+      if (!recorder || recorder.state === 'inactive') { resolve(null); return }
+      const timeout = setTimeout(() => resolve(localRecordingUrlRef.current), 1500)
+      recorder.onstop = () => {
+        clearTimeout(timeout)
+        try {
+          const blob = new Blob(audioChunksRef.current, { type: recorder.mimeType || 'audio/webm' })
+          const url = URL.createObjectURL(blob)
+          localRecordingUrlRef.current = url
+          resolve(url)
+        } catch { resolve(null) }
+      }
+      try { recorder.stop() } catch { clearTimeout(timeout); resolve(null) }
+    })
+  }
+
+  const handleCallEnd = useCallback(async (finalMessages, vapiMeta) => {
     if (hasEndedRef.current) return
     hasEndedRef.current = true
     clearInterval(timerRef.current)
-    onSessionEnd(finalMessages, elapsedRef.current, meta)
+    const recordingUrl = await stopRecorder()
+    onSessionEnd(finalMessages, elapsedRef.current, { ...vapiMeta, localRecordingUrl: recordingUrl })
   }, [onSessionEnd])
 
   const { callStatus, isSpeaking, isAiSpeaking, isMuted, partialTranscript, messages, error, startCall, stopCall, toggleMute, hasVapiKey } = useVapi({
@@ -76,34 +101,50 @@ export default function Session({ persona, onSessionEnd }) {
 
   useEffect(() => {
     if (!persona || !hasVapiKey) return
+
     const tryStart = async () => {
       try {
-        await navigator.mediaDevices.getUserMedia({ audio: true })
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
         setMicError(null)
+
+        // Start local MediaRecorder on the mic stream
+        try {
+          const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+            ? 'audio/webm;codecs=opus'
+            : MediaRecorder.isTypeSupported('audio/webm')
+            ? 'audio/webm'
+            : 'audio/mp4'
+          const recorder = new MediaRecorder(stream, { mimeType })
+          mediaRecorderRef.current = recorder
+          audioChunksRef.current = []
+          recorder.ondataavailable = (e) => {
+            if (e.data && e.data.size > 0) audioChunksRef.current.push(e.data)
+          }
+          recorder.start(1000) // collect in 1s chunks
+        } catch (recErr) {
+          console.warn('Local recording unavailable:', recErr)
+        }
+
         startCall()
       } catch {
         setMicError('Microphone access denied. Allow microphone access in your browser settings and reload.')
       }
     }
+
     tryStart()
   }, [persona, hasVapiKey])
 
   useEffect(() => {
     if (callStatus === 'active') {
       timerRef.current = setInterval(() => {
-        setElapsed(prev => {
-          elapsedRef.current = prev + 1
-          return prev + 1
-        })
+        setElapsed(prev => { elapsedRef.current = prev + 1; return prev + 1 })
       }, 1000)
     }
     return () => clearInterval(timerRef.current)
   }, [callStatus])
 
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
-    }
+    if (messagesEndRef.current) messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
   }, [messages, partialTranscript])
 
   const userMessages = messages.filter(m => m.role === 'user')
@@ -114,16 +155,19 @@ export default function Session({ persona, onSessionEnd }) {
   const statusInfo = getStatusLabel(callStatus, isSpeaking, isAiSpeaking)
   const coachingTip = getCoachingTip(talkRatio, userMessages.length)
 
-  function handleEndSession() {
+  async function handleEndSession() {
     if (hasEndedRef.current) return
     stopCall()
-    setTimeout(() => {
+    // Give VAPI ~600ms to fire call-end (which triggers handleCallEnd with recording)
+    // Fallback if it never fires
+    setTimeout(async () => {
       if (!hasEndedRef.current) {
         hasEndedRef.current = true
         clearInterval(timerRef.current)
-        onSessionEnd(messages, elapsedRef.current, {})
+        const recordingUrl = await stopRecorder()
+        onSessionEnd(messages, elapsedRef.current, { localRecordingUrl: recordingUrl })
       }
-    }, 500)
+    }, 600)
   }
 
   if (!persona) return null
@@ -135,9 +179,7 @@ export default function Session({ persona, onSessionEnd }) {
       {/* TOP BAR */}
       <div className="session-topbar">
         <div className="session-topbar-left">
-          <div className="persona-avatar" style={{ width: 36, height: 36, fontSize: 12 }}>
-            {persona.initials}
-          </div>
+          <div className="persona-avatar" style={{ width: 36, height: 36, fontSize: 12 }}>{persona.initials}</div>
           <div>
             <div className="session-persona-name">{persona.name}</div>
             <div className="session-persona-role">{persona.role} · {persona.company}</div>
@@ -168,9 +210,7 @@ export default function Session({ persona, onSessionEnd }) {
             </div>
           )}
           {micError && <div className="mic-error"><p>{micError}</p></div>}
-          {error && !micError && (
-            <div className="banner banner-error" style={{ margin: '16px' }}>{error}</div>
-          )}
+          {error && !micError && <div className="banner banner-error" style={{ margin: '16px' }}>{error}</div>}
 
           <div className="transcript-messages">
             {callStatus === 'connecting' && (
