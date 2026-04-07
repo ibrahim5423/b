@@ -1,46 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import Vapi from '@vapi-ai/web'
 
-function selectVoice(gender, region) {
+function selectVoice(gender) {
   const g = (gender || 'male').toLowerCase()
-  const r = (region || 'western').toLowerCase()
-
-  if (r === 'indian' || r === 'south_asian') {
-    return g === 'female'
-      ? { provider: 'azure', voiceId: 'en-IN-NeerjaNeural' }
-      : { provider: 'azure', voiceId: 'en-IN-PrabhatNeural' }
-  }
-  if (r === 'british' || r === 'uk') {
-    return g === 'female'
-      ? { provider: 'azure', voiceId: 'en-GB-SoniaNeural' }
-      : { provider: 'azure', voiceId: 'en-GB-RyanNeural' }
-  }
-  if (r === 'australian') {
-    return g === 'female'
-      ? { provider: 'azure', voiceId: 'en-AU-NatashaNeural' }
-      : { provider: 'azure', voiceId: 'en-AU-WilliamNeural' }
-  }
-  if (r === 'middle_eastern') {
-    return g === 'female'
-      ? { provider: 'azure', voiceId: 'en-US-AnaNeural' }
-      : { provider: 'azure', voiceId: 'en-US-BrandonNeural' }
-  }
-  if (r === 'east_asian') {
-    return g === 'female'
-      ? { provider: 'azure', voiceId: 'en-US-JaneNeural' }
-      : { provider: 'azure', voiceId: 'en-US-JasonNeural' }
-  }
-  if (r === 'african') {
-    return g === 'female'
-      ? { provider: 'azure', voiceId: 'en-US-MichelleNeural' }
-      : { provider: 'azure', voiceId: 'en-US-GuyNeural' }
-  }
-  if (r === 'latin_american') {
-    return g === 'female'
-      ? { provider: 'azure', voiceId: 'en-US-AmberNeural' }
-      : { provider: 'azure', voiceId: 'en-US-TonyNeural' }
-  }
-  // Default western
   return g === 'female'
     ? { provider: 'vapi', voiceId: 'Kylie' }
     : { provider: 'vapi', voiceId: 'Elliot' }
@@ -176,8 +138,8 @@ STRICT RULES:
 
     const assistantConfig = {
       model: {
-        provider: 'anthropic',
-        model: 'claude-haiku-3-5-20251001',
+        provider: 'groq',
+        model: 'llama-3.3-70b-versatile',
         temperature: 0.4,
         maxTokens: 80,
         messages: [{ role: 'system', content: systemPrompt }]
