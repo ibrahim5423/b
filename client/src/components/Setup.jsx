@@ -342,6 +342,26 @@ export default function Setup({ initialPersona, onPersonaReady }) {
           }}
         />
 
+        <div className="setup-hint">
+          Describe a persona or paste a LinkedIn URL. The AI builds your opponent in seconds.
+        </div>
+
+        {error && <div className="banner banner-error">{error}</div>}
+
+        <div>
+          <button
+            type="submit"
+            className="btn-primary"
+            disabled={loading || !query.trim()}
+          >
+            {loading ? (
+              <><span className="spinner spinner-sm" />Building persona...</>
+            ) : (
+              'Generate Persona →'
+            )}
+          </button>
+        </div>
+
         {/* Additional Details Toggle */}
         <div>
           <button
@@ -381,33 +401,12 @@ export default function Setup({ initialPersona, onPersonaReady }) {
           overflow: 'hidden',
           maxHeight: showAdditional ? '800px' : '0px',
           opacity: showAdditional ? 1 : 0,
-          transition: 'max-height 0.2s ease, opacity 0.2s ease',
-          marginTop: showAdditional ? 0 : 0
+          transition: 'max-height 0.2s ease, opacity 0.2s ease'
         }}>
           <AdditionalDetailsPanel
             details={additionalDetails}
             onChange={setAdditionalDetails}
           />
-        </div>
-
-        <div className="setup-hint">
-          Describe a persona or paste a LinkedIn URL. The AI builds your opponent in seconds.
-        </div>
-
-        {error && <div className="banner banner-error">{error}</div>}
-
-        <div>
-          <button
-            type="submit"
-            className="btn-primary"
-            disabled={loading || !query.trim()}
-          >
-            {loading ? (
-              <><span className="spinner spinner-sm" />Building persona...</>
-            ) : (
-              'Generate Persona →'
-            )}
-          </button>
         </div>
       </form>
 
