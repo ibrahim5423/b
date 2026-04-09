@@ -25,8 +25,21 @@ const FALLBACK_PERSONA = {
   style: 'Cuts to the point quickly, challenges assumptions, and expects data before committing to anything.'
 }
 
+function buildSellerContext(details) {
+  if (!details) return ''
+  const parts = []
+  if (details.product) parts.push(`Product being sold: ${details.product}`)
+  const objections = details.objections?.filter(o => o.trim())
+  if (objections?.length) parts.push(`Common objections this seller faces:\n` + objections.map(o => `- ${o}`).join('\n'))
+  if (details.dealSize) parts.push(`Typical deal size: ${details.dealSize}`)
+  if (details.callType) parts.push(`Call type: ${details.callType}`)
+  if (details.yourCompany) parts.push(`Seller's company: ${details.yourCompany}`)
+  if (details.prospectContext) parts.push(`Extra prospect context: ${details.prospectContext}`)
+  return parts.length ? '\n\nSELLER CONTEXT:\n' + parts.join('\n\n') : ''
+}
+
 router.post('/generate-persona', async (req, res) => {
-  const { query } = req.body
+  const { query, additionalDetails } = req.body
 
   if (!query || typeof query !== 'string' || query.trim().length === 0) {
     return res.status(400).json({ error: 'query is required' })
@@ -43,11 +56,15 @@ router.post('/generate-persona', async (req, res) => {
       messages: [
         {
           role: 'user',
-          content: `Generate a realistic B2B sales prospect persona based on: ${query.trim()}
+          content: `Generate a realistic B2B sales prospect persona based on: ${query.trim()}${buildSellerContext(additionalDetails)}
 
 IMPORTANT: The "gender" and "region" fields control the AI voice during roleplay. You MUST set them accurately based on the persona's name and background. For example: an Indian name like "Rajesh" → gender "male", region "indian". A British name like "Charlotte" → gender "female", region "british".
 
-Return ONLY a raw JSON object with no markdown, no backticks, no explanation. Fields:
+${additionalDetails && buildSellerContext(additionalDetails) ? `Use the SELLER CONTEXT above to:
+- Tailor the persona's objections to specifically push back on the seller's product/offer
+- Calibrate difficulty based on deal size (larger deals = harder persona)
+- Write a 2-sentence "briefing" that tells the rep what to watch out for in this specific call
+` : ''}Return ONLY a raw JSON object with no markdown, no backticks, no explanation. Fields:
 {
   "name": string (a culturally appropriate full name),
   "role": string,
@@ -59,7 +76,8 @@ Return ONLY a raw JSON object with no markdown, no backticks, no explanation. Fi
   "objections": string[] (exactly 3),
   "pressure_points": string[] (exactly 2),
   "difficulty": "Easy" | "Medium" | "Hard",
-  "style": string (one sentence describing their communication style)
+  "style": string (one sentence describing their communication style),
+  "briefing": string | null (2 sentences of intel for the rep about this specific call — null if no seller context provided)
 }`
         }
       ]
@@ -96,6 +114,7 @@ Return ONLY a raw JSON object with no markdown, no backticks, no explanation. Fi
       persona.difficulty = 'Medium'
     }
     if (!persona.style) persona.style = FALLBACK_PERSONA.style
+    if (typeof persona.briefing !== 'string') persona.briefing = null
     if (!['male', 'female'].includes(persona.gender)) persona.gender = 'male'
     const validRegions = ['western', 'indian', 'british', 'australian', 'middle_eastern', 'east_asian', 'african', 'latin_american']
     if (!validRegions.includes(persona.region)) persona.region = 'western'
