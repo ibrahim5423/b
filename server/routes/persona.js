@@ -60,10 +60,11 @@ router.post('/generate-persona', async (req, res) => {
 
 IMPORTANT: The "gender" and "region" fields control the AI voice during roleplay. You MUST set them accurately based on the persona's name and background. For example: an Indian name like "Rajesh" → gender "male", region "indian". A British name like "Charlotte" → gender "female", region "british".
 
-${additionalDetails && buildSellerContext(additionalDetails) ? `Use the SELLER CONTEXT above to:
-- Tailor the persona's objections to specifically push back on the seller's product/offer
-- Calibrate difficulty based on deal size (larger deals = harder persona)
-- Write a 2-sentence "briefing" that tells the rep what to watch out for in this specific call
+${additionalDetails && buildSellerContext(additionalDetails) ? `CRITICAL — You MUST use the SELLER CONTEXT above. Do NOT ignore it:
+1. Every objection MUST directly reference the seller's product, deal size, or situation. Generic objections like "we already have a solution" are NOT acceptable — make them specific, e.g. "We tested [product category] last year and our reps refused to use it."
+2. Pressure points MUST relate to the seller's market or offer.
+3. Calibrate difficulty: Under $1K = Easy, $1K-$10K = Medium, $10K+ = Hard (unless overridden).
+4. The "briefing" field is REQUIRED (not null). Write exactly 2 sentences: (a) the #1 risk for this call based on the prospect's likely concerns and (b) one tactical suggestion.
 ` : ''}Return ONLY a raw JSON object with no markdown, no backticks, no explanation. Fields:
 {
   "name": string (a culturally appropriate full name),

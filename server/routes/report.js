@@ -46,37 +46,51 @@ router.post('/generate-report', async (req, res) => {
       messages: [
         {
           role: 'user',
-          content: `You are a brutally honest B2B sales coach. Analyse this sales roleplay session. Do NOT sugarcoat.
+          content: `You are a brutally honest elite B2B sales coach. Analyse this sales roleplay session. Do NOT sugarcoat. Be SPECIFIC — reference exact quotes, name the persona, and tie every observation to what actually happened.
 
-Persona: ${personaName}, ${persona?.role || 'Executive'} at ${persona?.company || 'a company'}. Difficulty: ${persona?.difficulty || 'Medium'}.
+PERSONA PROFILE:
+- Name: ${personaName}, ${persona?.role || 'Executive'} at ${persona?.company || 'a company'}
+- Difficulty: ${persona?.difficulty || 'Medium'}
+- Traits: ${persona?.traits?.join(', ') || 'Unknown'}
+- Communication style: ${persona?.style || 'Unknown'}
+- Objections they were primed to raise: ${persona?.objections?.join(' | ') || 'None specified'}
+- Pressure points (what they actually care about): ${persona?.pressure_points?.join(' | ') || 'None specified'}
+${persona?.briefing ? `- Rep briefing (what the rep was told to watch for): ${persona.briefing}` : ''}
 
-Transcript:
+TRANSCRIPT:
 ${formattedTranscript}
 
-IMPORTANT: Flag EVERYTHING that would lose a real deal — including unprofessional language, insults, rudeness, off-topic remarks, rambling, weak openers, and poor objection handling. If the rep said anything inappropriate (insults, profanity, disrespect), that is an automatic fumble and must appear in moments with a rewrite. Be specific and harsh where warranted.
+ANALYSIS RULES:
+1. NEVER use generic feedback like "could improve discovery" or "need better objection handling". Instead reference EXACT quotes: "When ${personaName} said [X], you responded with [Y] — that was a miss because [Z]."
+2. Score each dimension based on what ACTUALLY happened in the transcript. If the rep never asked a discovery question, say "You asked zero discovery questions in the entire call."
+3. Check if the rep addressed ${personaName}'s specific pressure points (${persona?.pressure_points?.join(', ') || 'none listed'}). If they missed them, call it out by name.
+4. Check if the rep handled ${personaName}'s objections. For each objection raised, assess whether the rep's response was effective or weak.
+${persona?.briefing ? `5. The rep was briefed: "${persona.briefing}" — Did they follow this advice? If not, flag it as a missed tactical opportunity.` : ''}
+6. Flag unprofessional language, insults, rudeness, off-topic remarks as automatic fumbles.
+7. Every "note" in scores must contain a direct quote or specific reference — NO vague statements.
 
 Return ONLY a raw JSON object, no markdown, no backticks:
 {
-  "overall": number (0-100, dock heavily for unprofessional behaviour),
-  "verdict": string (2-3 brutally honest sentences, name the biggest win and biggest miss — call out bad behaviour directly),
+  "overall": number (0-100, dock heavily for missed pressure points and unprofessional behaviour),
+  "verdict": string (2-3 brutally honest sentences. Name the persona. Reference a specific quote for the biggest win and biggest miss. Example: "When ${personaName} pushed back on budget, you folded immediately instead of reframing value."),
   "scores": [
     {
       "label": string,
       "score": number (0-100),
-      "note": string (one specific, direct sentence — call out what happened)
+      "note": string (one sentence with a SPECIFIC quote or reference — e.g. 'You asked "${personaName} what keeps you up at night" which opened the door to their pipeline concerns.' NOT 'Good discovery questions.')
     }
-  ] (exactly 5 items in this order: "Discovery Quality", "Challenger Positioning", "Objection Handling", "Talk / Listen Ratio", "Professionalism"),
+  ] (exactly 5 items: "Discovery Quality", "Challenger Positioning", "Objection Handling", "Talk / Listen Ratio", "Professionalism"),
   "moments": [
     {
       "type": "fumble" | "win",
       "time": string (MM:SS approximate),
-      "label": string (short description),
+      "label": string (short, specific — e.g. "Ignored budget objection" not "Weak handling"),
       "said": string (exact quote from transcript),
-      "rewrite": string | null (null for wins, professional rewrite for fumbles)
+      "rewrite": string | null (null for wins. For fumbles: a specific, professional alternative that addresses ${personaName}'s actual concern)
     }
-  ] (2-5 moments — include ALL unprofessional moments as fumbles),
-  "focus_title": string (the single most important thing to fix),
-  "focus_desc": string (2 sentences of direct coaching — tell them exactly what to do differently)
+  ] (3-6 moments — every objection the persona raised should be assessed as a win or fumble),
+  "focus_title": string (one specific skill to fix, e.g. "Ask about their ${persona?.pressure_points?.[0] || 'core pain'} before pitching"),
+  "focus_desc": string (2 sentences: what specifically went wrong and exactly what to say differently next time. Include a sample phrase the rep should practice.)
 }`
         }
       ]
