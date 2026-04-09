@@ -120,6 +120,10 @@ ${additionalDetails && buildSellerContext(additionalDetails) ? `CRITICAL — You
     const validRegions = ['western', 'indian', 'british', 'australian', 'middle_eastern', 'east_asian', 'african', 'latin_american']
     if (!validRegions.includes(persona.region)) persona.region = 'western'
 
+    // Pass call context through directly from additionalDetails
+    persona.callType = additionalDetails?.callType || null
+    persona.prospectContext = additionalDetails?.prospectContext || null
+
     res.json({ persona })
   } catch (err) {
     console.error('Persona generation error:', err)

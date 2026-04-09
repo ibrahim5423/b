@@ -116,9 +116,25 @@ export function useVapi({ persona, onCallEnd, onTranscriptUpdate }) {
     setCallStatus('connecting')
     setError(null)
 
-    const systemPrompt = `You are ${persona.name}, ${persona.role} at ${persona.company}. You are a BUSY EXECUTIVE receiving an unsolicited sales call. You are the BUYER, not a seller.
+    const callContext = (() => {
+      const t = persona.callType
+      const ctx = persona.prospectContext
+      if (t === 'Warm follow-up') {
+        return `You have spoken with this rep before. ${ctx ? `Context from the last interaction: ${ctx}` : 'You vaguely remember a previous conversation but want specifics before committing any time.'} You are open but still skeptical — they need to earn your trust with substance, not just pleasantries.`
+      }
+      if (t === 'Discovery call') {
+        return `This is a scheduled discovery call you agreed to take. ${ctx ? `Background: ${ctx}` : 'You have a rough idea of what they sell but no details yet.'} You are willing to talk but you have 20 minutes max and high expectations.`
+      }
+      if (t === 'Demo / evaluation') {
+        return `You are evaluating this product alongside 1-2 competitors. ${ctx ? `Context: ${ctx}` : 'You want to see concrete proof it solves your problem before you spend any more time.'} You will ask hard questions about specifics.`
+      }
+      // Cold outbound or unset
+      return `You are a BUSY EXECUTIVE receiving an unsolicited cold call. ${ctx ? `Note: ${ctx}` : ''} You did not expect this call and your default is to get off the phone quickly.`
+    })()
 
-Your job: be a realistic, skeptical prospect. Push back. Be hard to impress. Only warm up if the rep earns it.
+    const systemPrompt = `You are ${persona.name}, ${persona.role} at ${persona.company}. You are the BUYER, not a seller.
+
+${callContext}
 
 Your personality: ${persona.style}
 Your traits: ${persona.traits.join(', ')}
@@ -145,7 +161,11 @@ STRICT RULES:
         messages: [{ role: 'system', content: systemPrompt }]
       },
       voice,
-      firstMessage: `${persona.name} speaking.`,
+      firstMessage: persona.callType === 'Warm follow-up'
+        ? `${persona.name}.`
+        : persona.callType === 'Discovery call' || persona.callType === 'Demo / evaluation'
+        ? `${persona.name}, go ahead.`
+        : `${persona.name} speaking.`,
       endCallMessage: "I have to jump.",
       transcriber: {
         provider: 'deepgram',
