@@ -103,6 +103,16 @@ function App() {
     navigate('/')
   }
 
+  function handlePracticeAgainWithPersona(p) {
+    setPersona(p)
+    setTranscript([])
+    setReport(null)
+    setSessionDuration(0)
+    localStorage.removeItem('bout_transcript')
+    setShowHistory(false)
+    navigate('/session')
+  }
+
   // Show history button on all pages except session (fullscreen)
   const showHistoryBtn = location.pathname !== '/session'
 
@@ -177,6 +187,7 @@ function App() {
         <CallHistory
           history={callHistory}
           onClose={() => setShowHistory(false)}
+          onPracticeAgain={handlePracticeAgainWithPersona}
         />
       )}
     </>

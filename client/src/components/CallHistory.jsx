@@ -194,7 +194,7 @@ function CallDetails({ call }) {
   )
 }
 
-function CallCard({ call, index, total }) {
+function CallCard({ call, index, total, onPracticeAgain }) {
   const [expanded, setExpanded] = useState(false)
   const score = call.report?.overall
   const msgCount = call.transcript?.filter(m => m.role === 'user').length || 0
@@ -246,12 +246,50 @@ function CallCard({ call, index, total }) {
         <ChevronIcon open={expanded} />
       </div>
 
-      {expanded && <div style={{ padding: '0 16px 16px' }}><CallDetails call={call} /></div>}
+      {expanded && (
+        <div style={{ padding: '0 16px 16px' }}>
+          <CallDetails call={call} />
+          {/* Practice Again button */}
+          <div style={{ marginTop: 16, paddingTop: 14, borderTop: '1px solid var(--border)' }}>
+            <button
+              onClick={e => { e.stopPropagation(); onPracticeAgain(call.persona) }}
+              style={{
+                width: '100%', padding: '11px 0',
+                background: 'var(--surface-2)',
+                border: '1px solid var(--border)',
+                color: 'var(--text)', fontSize: 11,
+                fontFamily: 'DM Mono, monospace',
+                letterSpacing: '0.1em', textTransform: 'uppercase',
+                cursor: 'pointer', transition: 'all 0.2s ease',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = 'var(--surface-hover)'
+                e.currentTarget.style.borderColor = 'var(--border-hover)'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = 'var(--surface-2)'
+                e.currentTarget.style.borderColor = 'var(--border)'
+              }}
+            >
+              <span style={{
+                width: 24, height: 24,
+                background: 'linear-gradient(135deg, var(--text) 0%, rgba(240,237,232,0.8) 100%)',
+                color: 'var(--bg)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 9, fontWeight: 700, flexShrink: 0
+              }}>
+                {call.persona?.initials || '??'}
+              </span>
+              Practice Again with {call.persona?.name?.split(' ')[0] || 'this persona'} →
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
 
-export default function CallHistory({ history, onClose }) {
+export default function CallHistory({ history, onClose, onPracticeAgain }) {
   return (
     <>
       {/* Backdrop */}
@@ -306,7 +344,7 @@ export default function CallHistory({ history, onClose }) {
             </div>
           ) : (
             [...history].reverse().map((call, i) => (
-              <CallCard key={call.id} call={call} index={i} total={history.length} />
+              <CallCard key={call.id} call={call} index={i} total={history.length} onPracticeAgain={onPracticeAgain} />
             ))
           )}
         </div>
