@@ -5,12 +5,57 @@ import Session from './components/Session.jsx'
 import Report from './components/Report.jsx'
 import CallHistory from './components/CallHistory.jsx'
 
-function HistoryButtonIcon() {
+function TrainIcon({ active }) {
   return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2 : 1.5} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+      <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+      <line x1="12" y1="19" x2="12" y2="23"/>
+      <line x1="8" y1="23" x2="16" y2="23"/>
+    </svg>
+  )
+}
+
+function HistoryIcon({ active }) {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2 : 1.5} strokeLinecap="round" strokeLinejoin="round">
       <polyline points="1 4 1 10 7 10"/>
       <path d="M3.51 15a9 9 0 1 0 .49-4.95"/>
     </svg>
+  )
+}
+
+function BottomNav({ callHistory }) {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const path = location.pathname
+  const isHidden = path === '/session' || path === '/report'
+  if (isHidden) return null
+
+  return (
+    <nav className="bottom-nav">
+      <button className={`bottom-nav-tab ${path === '/' ? 'active' : ''}`} onClick={() => navigate('/')}>
+        <span className="nav-icon"><TrainIcon active={path === '/'} /></span>
+        Train
+      </button>
+      <button className={`bottom-nav-tab ${path === '/history' ? 'active' : ''}`} onClick={() => navigate('/history')}>
+        <span className="nav-icon" style={{ position: 'relative' }}>
+          <HistoryIcon active={path === '/history'} />
+          {callHistory.length > 0 && (
+            <span style={{
+              position: 'absolute', top: -4, right: -6,
+              background: 'var(--red)', color: 'white',
+              width: 14, height: 14, borderRadius: '50%',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 8, fontWeight: 700, lineHeight: 1
+            }}>
+              {callHistory.length > 9 ? '9+' : callHistory.length}
+            </span>
+          )}
+        </span>
+        History
+      </button>
+    </nav>
   )
 }
 
@@ -26,10 +71,8 @@ function App() {
   const [callHistory, setCallHistory] = useState(() => {
     try { return JSON.parse(localStorage.getItem('bout_call_history') || '[]') } catch { return [] }
   })
-  const [showHistory, setShowHistory] = useState(false)
 
   const navigate = useNavigate()
-  const location = useLocation()
 
   useEffect(() => {
     try {
@@ -46,14 +89,11 @@ function App() {
     try { localStorage.setItem('bout_call_history', JSON.stringify(callHistory)) } catch {}
   }, [callHistory])
 
-  function handlePersonaReady(p) {
-    setPersona(p)
-  }
+  function handlePersonaReady(p) { setPersona(p) }
 
   function handleSessionEnd(msgs, duration, meta) {
     setTranscript(msgs)
     setSessionDuration(duration)
-    // Save to history immediately (report will be added later via handleReportReady)
     const record = {
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       timestamp: Date.now(),
@@ -63,24 +103,16 @@ function App() {
       duration,
       meta: meta || {}
     }
-    setCallHistory(prev => {
-      const next = [...prev, record]
-      // Keep last 50 calls
-      return next.slice(-50)
-    })
-    // Store the record id so we can attach the report later
+    setCallHistory(prev => [...prev, record].slice(-50))
     localStorage.setItem('bout_pending_record_id', record.id)
     navigate('/report')
   }
 
   function handleReportReady(r) {
     setReport(r)
-    // Attach report to the most recent history record
     const pendingId = localStorage.getItem('bout_pending_record_id')
     if (pendingId) {
-      setCallHistory(prev =>
-        prev.map(rec => rec.id === pendingId ? { ...rec, report: r } : rec)
-      )
+      setCallHistory(prev => prev.map(rec => rec.id === pendingId ? { ...rec, report: r } : rec))
       localStorage.removeItem('bout_pending_record_id')
     }
   }
@@ -109,17 +141,14 @@ function App() {
     setReport(null)
     setSessionDuration(0)
     localStorage.removeItem('bout_transcript')
-    setShowHistory(false)
     navigate('/session')
   }
 
-  // Show history button on all pages except session (fullscreen)
-  const showHistoryBtn = location.pathname !== '/session'
-
   return (
-    <>
+    <div className="app-shell">
       <Routes>
         <Route path="/" element={<Setup initialPersona={persona} onPersonaReady={handlePersonaReady} />} />
+        <Route path="/history" element={<CallHistory history={callHistory} onPracticeAgain={handlePracticeAgainWithPersona} />} />
         <Route path="/session" element={<Session persona={persona} onSessionEnd={handleSessionEnd} />} />
         <Route
           path="/report"
@@ -136,61 +165,8 @@ function App() {
           }
         />
       </Routes>
-
-      {/* Floating history button */}
-      {showHistoryBtn && (
-        <button
-          onClick={() => setShowHistory(true)}
-          style={{
-            position: 'fixed',
-            bottom: 28,
-            left: 28,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '10px 16px',
-            background: 'var(--surface-2)',
-            border: '1px solid var(--border)',
-            color: 'var(--muted)',
-            fontSize: 11,
-            letterSpacing: '0.06em',
-            cursor: 'pointer',
-            fontFamily: 'DM Mono, monospace',
-            transition: 'all 0.2s ease',
-            zIndex: 50
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.borderColor = 'var(--border-hover)'
-            e.currentTarget.style.color = 'var(--text)'
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.borderColor = 'var(--border)'
-            e.currentTarget.style.color = 'var(--muted)'
-          }}
-        >
-          <HistoryButtonIcon />
-          CALL STATS
-          {callHistory.length > 0 && (
-            <span style={{
-              background: 'var(--red)', color: 'white', borderRadius: '50%',
-              width: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 9, fontWeight: 600, flexShrink: 0
-            }}>
-              {callHistory.length > 99 ? '99+' : callHistory.length}
-            </span>
-          )}
-        </button>
-      )}
-
-      {/* History drawer */}
-      {showHistory && (
-        <CallHistory
-          history={callHistory}
-          onClose={() => setShowHistory(false)}
-          onPracticeAgain={handlePracticeAgainWithPersona}
-        />
-      )}
-    </>
+      <BottomNav callHistory={callHistory} />
+    </div>
   )
 }
 

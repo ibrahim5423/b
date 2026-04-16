@@ -1232,4 +1232,347 @@ input, textarea {
 .mt-32 { margin-top: 32px; }
 .flex  { display: flex; }
 .items-center { align-items: center; }
+
+/* ── Mobile Shell ── */
+.app-shell {
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: var(--bg);
+}
+
+/* On desktop, show a subtle frame */
+@media (min-width: 500px) {
+  body {
+    background: #050505;
+  }
+  .app-shell {
+    box-shadow: 0 0 0 1px rgba(240,237,232,0.06), 0 40px 80px rgba(0,0,0,0.6);
+    min-height: 100vh;
+  }
+}
+
+/* ── Bottom Navigation ── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 430px;
+  background: rgba(11,11,11,0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  display: flex;
+  z-index: 50;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.bottom-nav-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 12px 8px 10px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: var(--muted);
+  transition: color 0.2s ease;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  min-height: 56px;
+}
+
+.bottom-nav-tab:active { opacity: 0.7; }
+
+.bottom-nav-tab.active {
+  color: var(--text);
+}
+
+.bottom-nav-tab .nav-icon {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.bottom-nav-tab.active .nav-icon {
+  color: var(--text);
+}
+
+/* ── Mobile Page Wrapper ── */
+.mobile-page {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: calc(72px + env(safe-area-inset-bottom));
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Mobile Screen Header ── */
+.screen-header {
+  padding: 56px 24px 0;
+  margin-bottom: 32px;
+}
+
+.screen-logo {
+  font-family: 'DM Serif Display', serif;
+  font-size: 22px;
+  color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 36px;
+}
+
+.screen-logo::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--red);
+  box-shadow: 0 0 8px var(--red-glow);
+  display: inline-block;
+  margin-bottom: 1px;
+}
+
+.screen-eyebrow {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.screen-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 36px;
+  line-height: 1.1;
+  letter-spacing: -0.3px;
+  margin-bottom: 8px;
+}
+
+.screen-sub {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* ── Mobile Input ── */
+.mobile-input {
+  width: 100%;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  color: var(--text);
+  font-size: 14px;
+  font-family: 'DM Mono', monospace;
+  font-weight: 300;
+  padding: 16px;
+  outline: none;
+  transition: border-color 0.2s ease;
+  -webkit-appearance: none;
+  resize: none;
+  line-height: 1.6;
+}
+
+.mobile-input:focus {
+  border-color: rgba(240,237,232,0.3);
+}
+
+.mobile-input::placeholder {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* ── Mobile Button (full-width) ── */
+.btn-mobile-primary {
+  width: 100%;
+  padding: 17px 24px;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 13px;
+  font-family: 'DM Mono', monospace;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 54px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-mobile-primary:active { opacity: 0.85; transform: scale(0.99); }
+.btn-mobile-primary:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+
+.btn-mobile-secondary {
+  width: 100%;
+  padding: 16px 24px;
+  background: transparent;
+  color: var(--text);
+  font-size: 12px;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.08em;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 50px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-mobile-secondary:active { opacity: 0.7; }
+
+/* ── Mobile Section Label ── */
+.section-label {
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 14px;
+  display: block;
+}
+
+/* ── Mobile Card ── */
+.mobile-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  padding: 20px;
+  margin-bottom: 1px;
+}
+
+/* ── Mobile Persona Card ── */
+.mobile-persona-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--red);
+  margin: 0 24px;
+  animation: slideUp 0.3s ease;
+}
+
+.mobile-persona-header {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.mobile-persona-body {
+  padding: 0;
+}
+
+.mobile-persona-row {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mobile-persona-row:last-child {
+  border-bottom: none;
+}
+
+/* ── History Screen ── */
+.history-list {
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--border);
+}
+
+.history-card {
+  background: var(--surface-1);
+  padding: 18px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.history-card:active { background: var(--surface-2); }
+.history-card.expanded { background: rgba(255,255,255,0.015); }
+
+/* ── Score Ring (Report) ── */
+.score-ring-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 36px 24px 24px;
+  background: var(--surface-1);
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Mobile Report Card ── */
+.report-score-card {
+  background: var(--surface-1);
+  border-bottom: 1px solid var(--border);
+  padding: 18px 20px;
+}
+
+.report-score-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.report-score-card-label {
+  font-size: 11px;
+  color: var(--text);
+  letter-spacing: 0.04em;
+}
+
+.report-score-card-num {
+  font-family: 'DM Serif Display', serif;
+  font-size: 22px;
+}
+
+.report-score-card-note {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.65;
+  margin-top: 6px;
+}
+
+/* ── Moment Card (mobile) ── */
+.moment-card-mobile {
+  background: var(--surface-1);
+  border-bottom: 1px solid var(--border);
+}
+
+.moment-header-mobile {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Safe area helpers ── */
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+.safe-top    { padding-top: env(safe-area-inset-top); }
+
 .justify-between { justify-content: space-between; }

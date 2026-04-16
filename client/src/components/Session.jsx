@@ -441,6 +441,7 @@ export default function Session({ persona, onSessionEnd }) {
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '22px 36px', borderTop: '1px solid var(--border)',
+        paddingBottom: 'max(22px, calc(22px + env(safe-area-inset-bottom)))',
         flexShrink: 0, position: 'relative', zIndex: 2,
         backdropFilter: 'blur(8px)'
       }}>
