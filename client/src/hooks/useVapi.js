@@ -147,7 +147,8 @@ STRICT RULES:
 - Respond in 1-2 short sentences max.
 - Be skeptical, busy, and direct. Challenge weak claims.
 - Only agree to a next step if the rep has genuinely impressed you.
-- Speak naturally. No stage directions, no asterisks, no action words.`
+- Speak naturally. No stage directions, no asterisks, no action words.
+- You CAN and SHOULD hang up if: the rep is rude or insulting, they waste more than 3 exchanges without getting to the point, they become repetitive, or you have clearly said you're not interested twice. Say exactly: "I have to jump." and end the conversation.`
 
     const voice = selectVoice(persona.gender, persona.region)
     console.log('[Bout] Voice selected:', voice, '| persona gender:', persona.gender, '| region:', persona.region)
@@ -167,6 +168,7 @@ STRICT RULES:
         ? `${persona.name}, go ahead.`
         : `${persona.name} speaking.`,
       endCallMessage: "I have to jump.",
+      endCallPhrases: ["I have to jump.", "I have to jump", "goodbye", "don't call me again", "please don't call again"],
       transcriber: {
         provider: 'deepgram',
         model: 'nova-3',

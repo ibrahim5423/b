@@ -16,6 +16,9 @@
   --red: #e85d4a;
   --red-dim: rgba(232, 93, 74, 0.12);
   --red-glow: rgba(232, 93, 74, 0.2);
+  --blue: #4da6ff;
+  --blue-dim: rgba(77, 166, 255, 0.12);
+  --blue-glow: rgba(77, 166, 255, 0.2);
   --green: #6fcf97;
   --green-dim: rgba(111, 207, 151, 0.1);
   --yellow: #f2c94c;

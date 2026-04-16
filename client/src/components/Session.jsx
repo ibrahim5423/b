@@ -49,8 +49,8 @@ function UserIcon() {
 
 // Large avatar with gradient ring, voice rings, breathing
 function AvatarTile({ children, speaking, accent, label, sublabel }) {
-  const accentColor = accent === 'red' ? 'var(--red)' : 'rgba(240,237,232,0.9)'
-  const accentGlow = accent === 'red' ? 'var(--red-glow)' : 'rgba(240,237,232,0.15)'
+  const accentColor = accent === 'blue' ? 'var(--blue)' : accent === 'red' ? 'var(--red)' : 'rgba(240,237,232,0.9)'
+  const accentGlow = accent === 'blue' ? 'var(--blue-glow)' : accent === 'red' ? 'var(--red-glow)' : 'rgba(240,237,232,0.15)'
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18 }}>
@@ -102,7 +102,7 @@ function AvatarTile({ children, speaking, accent, label, sublabel }) {
         <div style={{
           width: 124, height: 124, borderRadius: '50%',
           background: speaking
-            ? `linear-gradient(145deg, ${accent === 'red' ? 'rgba(232,93,74,0.15)' : 'rgba(240,237,232,0.08)'} 0%, var(--surface-2) 90%)`
+            ? `linear-gradient(145deg, ${accent === 'blue' ? 'rgba(77,166,255,0.15)' : accent === 'red' ? 'rgba(232,93,74,0.15)' : 'rgba(240,237,232,0.08)'} 0%, var(--surface-2) 90%)`
             : 'linear-gradient(145deg, var(--surface-2) 0%, var(--surface-1) 100%)',
           border: `1px solid ${speaking ? accentColor : 'rgba(240,237,232,0.08)'}`,
           boxShadow: speaking
@@ -357,7 +357,7 @@ export default function Session({ persona, onSessionEnd }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 40 }}>
           <AvatarTile
             speaking={youSpeaking}
-            accent="red"
+            accent="blue"
             label="You"
             sublabel={isMuted ? 'Muted' : youSpeaking ? 'Speaking' : 'Listening'}
           >
@@ -368,7 +368,7 @@ export default function Session({ persona, onSessionEnd }) {
 
           <AvatarTile
             speaking={aiSpeaking}
-            accent="light"
+            accent="red"
             label={persona.name}
             sublabel={
               callStatus === 'connecting' ? 'Connecting' :
