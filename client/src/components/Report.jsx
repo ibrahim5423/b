@@ -154,7 +154,7 @@ export default function Report({ persona, transcript, sessionDuration, existingR
   // Loading
   if (loading) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg)', gap: 20 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100dvh', background: 'var(--bg)', gap: 20 }}>
         <div style={{ position: 'relative' }}>
           <span className="spinner" style={{ width: 40, height: 40, borderWidth: 2 }} />
         </div>
@@ -169,7 +169,7 @@ export default function Report({ persona, transcript, sessionDuration, existingR
   // Error
   if (error) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--bg)', padding: '52px 24px 40px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh', background: 'var(--bg)', padding: '52px 24px 40px' }}>
         <div className="screen-logo">Bout</div>
         <div className="banner banner-error" style={{ marginBottom: 20, fontSize: 12 }}>{error}</div>
         <button className="btn-mobile-primary" onClick={() => { hasFetched.current = false; setError(null); setLoading(true) }}>
@@ -187,7 +187,7 @@ export default function Report({ persona, transcript, sessionDuration, existingR
   const color = scoreColor(report.overall)
 
   return (
-    <div style={{ background: 'var(--bg)', minHeight: '100vh' }}>
+    <div style={{ background: 'var(--bg)', minHeight: '100dvh', animation: 'pageEnter 0.22s ease both' }}>
 
       {/* Hero score block */}
       <div style={{

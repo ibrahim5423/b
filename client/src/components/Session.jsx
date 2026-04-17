@@ -288,7 +288,7 @@ export default function Session({ persona, onSessionEnd }) {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column',
-      height: '100vh', background: 'var(--bg)',
+      height: '100dvh', background: 'var(--bg)',
       position: 'relative', overflow: 'hidden'
     }}>
       {/* Radial backdrop glow - subtle scene-setting */}
