@@ -109,6 +109,16 @@ export function useVapi({ persona, onCallEnd, onTranscriptUpdate }) {
       return
     }
 
+    // Explicitly request microphone before VAPI tries — triggers browser permission dialog
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      stream.getTracks().forEach(t => t.stop())
+    } catch {
+      setError('Microphone access denied. Please allow microphone access in your browser settings and try again.')
+      setCallStatus('idle')
+      return
+    }
+
     messagesRef.current = []
     callMetaRef.current = {}
     setMessages([])
