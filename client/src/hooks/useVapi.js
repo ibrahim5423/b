@@ -169,7 +169,7 @@ STRICT RULES:
         : `${persona.name} speaking.`,
       endCallMessage: "I have to jump.",
       endCallPhrases: ["I have to jump.", "I have to jump", "don't call me again", "please don't call again"],
-      maxDurationSeconds: 600,
+      maxDurationSeconds: 300,
       transcriber: {
         provider: 'deepgram',
         model: 'nova-3',
