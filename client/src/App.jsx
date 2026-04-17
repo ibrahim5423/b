@@ -162,7 +162,7 @@ function App() {
     <div className="app-shell">
       <Routes>
         <Route path="/" element={<Setup initialPersona={persona} onPersonaReady={handlePersonaReady} />} />
-        <Route path="/learn" element={<Learn />} />
+        <Route path="/learn" element={<Learn onStartPractice={handlePracticeAgainWithPersona} />} />
         <Route path="/history" element={<CallHistory history={callHistory} onPracticeAgain={handlePracticeAgainWithPersona} />} />
         <Route path="/session" element={<Session persona={persona} onSessionEnd={handleSessionEnd} />} />
         <Route
