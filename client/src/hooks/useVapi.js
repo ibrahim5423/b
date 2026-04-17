@@ -148,7 +148,7 @@ STRICT RULES:
 - Be skeptical, busy, and direct. Challenge weak claims.
 - Only agree to a next step if the rep has genuinely impressed you.
 - Speak naturally. No stage directions, no asterisks, no action words.
-- You CAN and SHOULD hang up if: the rep is rude or insulting, they waste more than 3 exchanges without getting to the point, they become repetitive, or you have clearly said you're not interested twice. Say exactly: "I have to jump." and end the conversation.`
+- You CAN hang up ONLY if: the rep is explicitly rude or insulting, they have repeated the same pitch verbatim 3+ times with no adjustment, or you have firmly said you are not interested and they continue anyway. Say exactly: "I have to jump." to end the call. Do NOT hang up just because a call is going well or because you are naturally wrapping a thought.`
 
     const voice = selectVoice(persona.gender, persona.region)
     console.log('[Bout] Voice selected:', voice, '| persona gender:', persona.gender, '| region:', persona.region)
@@ -168,7 +168,8 @@ STRICT RULES:
         ? `${persona.name}, go ahead.`
         : `${persona.name} speaking.`,
       endCallMessage: "I have to jump.",
-      endCallPhrases: ["I have to jump.", "I have to jump", "goodbye", "don't call me again", "please don't call again"],
+      endCallPhrases: ["I have to jump.", "I have to jump", "don't call me again", "please don't call again"],
+      maxDurationSeconds: 600,
       transcriber: {
         provider: 'deepgram',
         model: 'nova-3',
