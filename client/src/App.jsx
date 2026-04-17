@@ -4,6 +4,7 @@ import Setup from './components/Setup.jsx'
 import Session from './components/Session.jsx'
 import Report from './components/Report.jsx'
 import CallHistory from './components/CallHistory.jsx'
+import Learn from './components/Learn.jsx'
 
 function TrainIcon({ active }) {
   return (
@@ -12,6 +13,15 @@ function TrainIcon({ active }) {
       <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
       <line x1="12" y1="19" x2="12" y2="23"/>
       <line x1="8" y1="23" x2="16" y2="23"/>
+    </svg>
+  )
+}
+
+function LearnIcon({ active }) {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2 : 1.5} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
     </svg>
   )
 }
@@ -37,6 +47,10 @@ function BottomNav({ callHistory }) {
       <button className={`bottom-nav-tab ${path === '/' ? 'active' : ''}`} onClick={() => navigate('/')}>
         <span className="nav-icon"><TrainIcon active={path === '/'} /></span>
         Train
+      </button>
+      <button className={`bottom-nav-tab ${path === '/learn' ? 'active' : ''}`} onClick={() => navigate('/learn')}>
+        <span className="nav-icon"><LearnIcon active={path === '/learn'} /></span>
+        Learn
       </button>
       <button className={`bottom-nav-tab ${path === '/history' ? 'active' : ''}`} onClick={() => navigate('/history')}>
         <span className="nav-icon" style={{ position: 'relative' }}>
@@ -148,6 +162,7 @@ function App() {
     <div className="app-shell">
       <Routes>
         <Route path="/" element={<Setup initialPersona={persona} onPersonaReady={handlePersonaReady} />} />
+        <Route path="/learn" element={<Learn />} />
         <Route path="/history" element={<CallHistory history={callHistory} onPracticeAgain={handlePracticeAgainWithPersona} />} />
         <Route path="/session" element={<Session persona={persona} onSessionEnd={handleSessionEnd} />} />
         <Route
