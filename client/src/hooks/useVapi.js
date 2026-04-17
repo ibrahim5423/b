@@ -109,12 +109,23 @@ export function useVapi({ persona, onCallEnd, onTranscriptUpdate }) {
       return
     }
 
-    // Explicitly request microphone before VAPI tries — triggers browser permission dialog
+    // Explicitly request microphone before VAPI starts so the browser
+    // permission dialog fires at the right moment with a clear user gesture.
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       stream.getTracks().forEach(t => t.stop())
-    } catch {
-      setError('Microphone access denied. Please allow microphone access in your browser settings and try again.')
+    } catch (micErr) {
+      const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent)
+      const isAndroid = /Android/.test(navigator.userAgent)
+      let msg = 'Microphone access was blocked. '
+      if (isIOS) {
+        msg += 'On iPhone: go to Settings → Safari → Microphone → Allow for this site.'
+      } else if (isAndroid) {
+        msg += 'Tap the lock icon in the address bar → Permissions → Microphone → Allow, then refresh.'
+      } else {
+        msg += 'Click the lock icon in your browser address bar and allow microphone access, then try again.'
+      }
+      setError(msg)
       setCallStatus('idle')
       return
     }
