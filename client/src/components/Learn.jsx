@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-const PASS_THRESHOLD = 85
+const PASS_THRESHOLD = 75
 
 const LEVELS = [
   {
@@ -25,7 +25,7 @@ const LEVELS = [
       },
       {
         heading: 'Scoring',
-        body: 'You need 85+ to unlock Level 2. Focus on a clean open and at least one relevant question before pitching.'
+        body: 'You need 75+ to unlock Level 2. Focus on a clean open and at least one relevant question before pitching.'
       }
     ],
     practicePersona: {
@@ -73,7 +73,7 @@ const LEVELS = [
       },
       {
         heading: 'Scoring',
-        body: 'Score 85+ to unlock Level 3. You need at least 3 discovery questions and at least one quantified pain point before you attempt a next step.'
+        body: 'Score 75+ to unlock Level 3. You need at least 3 discovery questions and at least one quantified pain point before you attempt a next step.'
       }
     ],
     practicePersona: {
@@ -121,7 +121,7 @@ const LEVELS = [
       },
       {
         heading: 'Scoring',
-        body: 'Score 85+ to unlock Level 4. You must isolate at least two objections and land a reframe that earns an advance.'
+        body: 'Score 75+ to unlock Level 4. You must isolate at least two objections and land a reframe that earns an advance.'
       }
     ],
     practicePersona: {
@@ -170,7 +170,7 @@ const LEVELS = [
       },
       {
         heading: 'Scoring',
-        body: 'Score 85+ to unlock Level 5. You need Marcus to give you a real next step without sounding scripted at any point.'
+        body: 'Score 75+ to unlock Level 5. You need Marcus to give you a real next step without sounding scripted at any point.'
       }
     ],
     practicePersona: {
@@ -219,7 +219,7 @@ const LEVELS = [
       },
       {
         heading: 'Scoring',
-        body: 'Score 85+ to complete the track. You must get a specific date + specific person for a next action, OR a clean no.'
+        body: 'Score 75+ to complete the track. You must get a specific date + specific person for a next action, OR a clean no.'
       }
     ],
     practicePersona: {
