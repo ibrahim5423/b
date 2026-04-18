@@ -12,20 +12,24 @@ const LEVELS = [
     summary: 'Get past the first 15 seconds. A forgiving prospect who will stay on the line if you sound human.',
     content: [
       {
+        heading: 'Your Scenario',
+        body: 'You are selling Repora — a lightweight project management tool for marketing teams. You spotted that Brightline Co just hired 4 new marketers and figured their spreadsheet-based workflow is breaking down.'
+      },
+      {
         heading: 'The Goal',
-        body: 'Open with Name + Company + Specific Reason. Your first sentence should give them a reason to care. Never ask "is now a good time?" — it\'s an exit.'
+        body: 'Open with Name + Company + Specific Reason. Your first sentence should give Sarah a reason to care. Never ask "is now a good time?" — it\'s an exit.'
       },
       {
         heading: 'What Works Here',
-        body: 'A clear, confident 10-second opener. State who you are, why you called, and what you want to discuss. Sarah is polite — she\'ll give you space if you earn the first breath.'
+        body: 'Reference the hiring trigger. "I noticed Brightline just added four marketers — most teams at that size hit a wall with spreadsheets around now." Sarah is polite and will stay on if you sound relevant.'
       },
       {
         heading: 'What Fails Here',
-        body: 'Rambling more than two sentences before giving her a chance to speak. Over-apologising for the call. Asking her how her day is going.'
+        body: 'Generic openers ("we help marketing teams be more productive"). Asking how her day is going. Rambling past two sentences before pausing.'
       },
       {
         heading: 'Scoring',
-        body: 'You need 75+ to unlock Level 2. Focus on a clean open and at least one relevant question before pitching.'
+        body: 'You need 75+ to unlock Level 2. Nail a specific opener and ask one impact question before pitching.'
       }
     ],
     practicePersona: {
@@ -38,12 +42,12 @@ const LEVELS = [
       region: 'western',
       difficulty: 'Easy',
       callType: null,
-      prospectContext: null,
-      style: 'Polite, patient, genuinely willing to hear a short pitch if the rep sounds like a person',
-      traits: ['Patient', 'Gives reps a fair shot', 'Rewards clear openers'],
-      objections: ['I\'ve got a few minutes — what\'s this about?', 'How did you get my number?'],
-      pressure_points: ['Getting better reporting on campaign ROI', 'Bandwidth on the content team'],
-      briefing: 'LEVEL 1 — First Impressions. Sarah is forgiving. Nail a clean 10-second opener and ask one specific question before pitching.',
+      prospectContext: 'Brightline Co recently hired 4 new marketers. The team currently tracks campaigns in spreadsheets and Slack threads. Sarah manages a 12-person team.',
+      style: 'Polite, patient, genuinely willing to hear a short pitch if the rep sounds relevant and human',
+      traits: ['Patient', 'Gives reps a fair shot', 'Rewards specific openers'],
+      objections: ['I\'ve got a few minutes — what\'s this about?', 'How did you get my number?', 'We already use spreadsheets and it works fine for now'],
+      pressure_points: ['Campaign tracking is getting messy with the new hires', 'Her team wastes time chasing status updates in Slack'],
+      briefing: 'LEVEL 1 — You are selling Repora (project management for marketing teams) to Sarah Kim at Brightline Co. She just grew her team and their spreadsheet workflow is cracking. She is forgiving — nail a specific opener tied to the hiring trigger and ask one real question.',
       systemPromptAddendum: `LEVEL 1 RULES (FORGIVING):
 - Give the rep the benefit of the doubt for the first 2 exchanges.
 - Only hang up if they are explicitly rude or silent for too long.
@@ -60,20 +64,24 @@ const LEVELS = [
     summary: 'A polite prospect who gives short answers by default. You earn depth by asking better questions.',
     content: [
       {
+        heading: 'Your Scenario',
+        body: 'You are selling PipelineIQ — a sales analytics platform that shows managers exactly where deals stall and why reps miss quota. You have a 30-minute discovery call booked with James Wu.'
+      },
+      {
         heading: 'The Goal',
-        body: 'Surface a real, quantified problem before you pitch. Avoid "what tools do you use?" — ask about impact instead.'
+        body: 'Surface a real, quantified problem before you pitch. James agreed to take this call but won\'t volunteer pain freely. Ask about impact, not process.'
       },
       {
         heading: 'What Works Here',
-        body: 'Impact questions: "What does that cost you in time or headcount?" "Where does solving this rank on your plate right now?" Silence after a good question earns the deep answer.'
+        body: '"When a rep misses quota, how long before you know why?" "What does a 6-month ramp cost you in missed revenue?" Let him finish. The real answer comes after the pause.'
       },
       {
         heading: 'What Fails Here',
-        body: 'Pitching before you\'ve found pain. Filling silence with a follow-up question before James has finished thinking. Generic discovery.'
+        body: 'Asking "what CRM do you use?" — that\'s surface. Pitching after one vague answer. Rushing past silence.'
       },
       {
         heading: 'Scoring',
-        body: 'Score 75+ to unlock Level 3. You need at least 3 discovery questions and at least one quantified pain point before you attempt a next step.'
+        body: 'Score 75+ to unlock Level 3. Get at least 3 discovery questions in and one quantified pain point before you attempt a next step.'
       }
     ],
     practicePersona: {
@@ -86,12 +94,12 @@ const LEVELS = [
       region: 'western',
       difficulty: 'Medium',
       callType: 'Discovery call',
-      prospectContext: null,
-      style: 'Polite but guarded — gives short answers, opens up only when the question earns it',
-      traits: ['Guarded', 'Short answers by default', 'Opens up with impact questions'],
-      objections: ['We\'re pretty happy with our setup', 'I\'m not sure we have a specific problem here', 'We\'ve tried tools like this before — didn\'t stick'],
-      pressure_points: ['Sales reps hit quota inconsistently', 'Pipeline visibility is poor', 'New reps take 6+ months to ramp'],
-      briefing: 'LEVEL 2 — Draw out pain before pitching. James will give one-line answers unless you ask impact questions. Quantify before you sell.',
+      prospectContext: 'ScaleUp Inc has a 25-rep sales team. 40% hit quota last quarter. New reps average 7 months to ramp. James manages the team and reports to the CRO.',
+      style: 'Polite but guarded — gives short one-line answers, opens up only when the question earns it',
+      traits: ['Guarded', 'Short answers by default', 'Opens up with specific impact questions'],
+      objections: ['We\'re pretty happy with our setup', 'I\'m not sure we have a specific problem here', 'We tried a tool like this before — reps didn\'t use it'],
+      pressure_points: ['Only 40% of reps hit quota last quarter', 'New reps take 7 months to ramp — costing deals'],
+      briefing: 'LEVEL 2 — You are selling PipelineIQ (sales analytics) to James Wu at ScaleUp Inc. His team has a quota attainment problem he hasn\'t fully admitted yet. He gives short answers. Only specific impact questions unlock the real pain. Do not pitch until you have a quantified problem.',
       systemPromptAddendum: `LEVEL 2 RULES (GUARDED):
 - Default to short answers (5-10 words). Do NOT volunteer pain.
 - Only expand when the rep asks a SPECIFIC impact/quantify question ("what does that cost you?", "how often does that happen?").
@@ -108,20 +116,24 @@ const LEVELS = [
     summary: 'Every answer you give triggers a fresh objection. You need to handle three in a row without caving.',
     content: [
       {
+        heading: 'Your Scenario',
+        body: 'You are selling Clarix — a reporting automation platform that replaces manual data pulls with live dashboards. You spoke with Rachel two weeks ago. She liked it but the objections start immediately.'
+      },
+      {
         heading: 'The Goal',
-        body: 'Handle three objections in sequence — budget, timing, and incumbent — without discounting or retreating to feature-pitch.'
+        body: 'Handle budget, incumbent, and bandwidth objections in sequence without discounting or feature-dumping. Each answer you give triggers a new one.'
       },
       {
         heading: 'What Works Here',
-        body: 'Acknowledge, isolate, reframe. "Totally fair — is budget the only thing, or is there something about the fit we haven\'t addressed?" Diagnose before you counter.'
+        body: '"Is budget the only thing standing in the way, or is there something about the fit we haven\'t fully addressed?" Isolate first, reframe second. Tie every reframe back to the 10+ hours/week her team loses.'
       },
       {
         heading: 'What Fails Here',
-        body: 'Immediately dropping to a lower tier. Listing features in response to objections. Arguing with her framing.'
+        body: 'Dropping the price. Listing Clarix features as a counter to objections. Accepting "next quarter" without a specific date.'
       },
       {
         heading: 'Scoring',
-        body: 'Score 75+ to unlock Level 4. You must isolate at least two objections and land a reframe that earns an advance.'
+        body: 'Score 75+ to unlock Level 4. Isolate at least two objections and land a reframe that earns a concrete advance.'
       }
     ],
     practicePersona: {
@@ -134,12 +146,12 @@ const LEVELS = [
       region: 'western',
       difficulty: 'Hard',
       callType: 'Warm follow-up',
-      prospectContext: 'Had a brief intro call two weeks ago. Interested in principle but loaded with objections.',
-      style: 'Friendly tone, but queues up a new objection the moment you answer the last one',
-      traits: ['Objection-stacker', 'Uses polite language to block progress', 'Will concede if reframed with specificity'],
-      objections: ['We don\'t have budget this quarter', 'We already use a competitor and it kind of works', 'My team doesn\'t have bandwidth to onboard anything new', 'Can you revisit next quarter?'],
-      pressure_points: ['Manual reporting eating 10+ hours a week', 'Burnout on the ops team', 'CFO pushing for efficiency gains'],
-      briefing: 'LEVEL 3 — Three objections in a row. Diagnose, isolate, reframe. Do not discount. Do not feature-dump.',
+      prospectContext: 'Had a brief intro call two weeks ago about Clarix (reporting automation). Rachel liked the product but flagged budget as tight. Her team spends 10+ hours a week on manual data pulls. CFO is pushing for efficiency gains.',
+      style: 'Friendly tone, but stacks a fresh objection the moment you answer the last one',
+      traits: ['Objection-stacker', 'Polite language masking real resistance', 'Will concede if reframed with specificity'],
+      objections: ['We don\'t have budget this quarter', 'We use Tableau and it kind of works', 'My team doesn\'t have bandwidth to onboard anything new', 'Can we revisit next quarter?'],
+      pressure_points: ['Manual reporting eating 10+ hours a week', 'Ops team is burning out', 'CFO pushing for headcount efficiency'],
+      briefing: 'LEVEL 3 — You are selling Clarix (reporting automation) to Rachel Torres at GrowthCo on a warm follow-up call. She liked the product but will stack budget, incumbent, and bandwidth objections one after another. Diagnose, isolate, reframe. Do not drop price. Do not list features.',
       systemPromptAddendum: `LEVEL 3 RULES (OBJECTION WALL):
 - Raise at LEAST 3 distinct objections across the call in sequence (budget, incumbent, bandwidth).
 - Every time the rep answers an objection, introduce a NEW one before moving forward.
@@ -157,20 +169,24 @@ const LEVELS = [
     summary: 'A CEO with razor-sharp radar for scripted delivery. Sound like a vendor and you\'re done in 20 seconds.',
     content: [
       {
+        heading: 'Your Scenario',
+        body: 'You are selling Rampfast — an AI onboarding tool that cuts new sales rep ramp time in half. Marcus just closed a Series A and is about to double his sales headcount. This is a cold call.'
+      },
+      {
         heading: 'The Goal',
-        body: 'Sound like a peer, not a vendor. Marcus will interrupt scripted delivery, call out uptalk, and test whether you actually understand his world.'
+        body: 'Sound like a peer, not a vendor. Marcus will interrupt the moment you sound scripted and he will call out weak tonality by name.'
       },
       {
         heading: 'What Works Here',
-        body: 'Slow cadence. Declarative statements. A genuine insight about his market before you ask anything. Comfort with silence.'
+        body: 'Lead with an insight, not a question: "Most teams that double headcount post-Series A lose 6 months of productivity to ramp — you\'re probably about to find out why." Slow. Declarative. No upward inflection.'
       },
       {
         heading: 'What Fails Here',
-        body: 'Over-enthusiasm. Asking permission. Rising inflection on statements. Reading from a mental script. Complimenting the company.'
+        body: 'Enthusiasm spikes. "Is now a good time?" Complimenting FastGrowth. Listing Rampfast features. Asking permission to share.'
       },
       {
         heading: 'Scoring',
-        body: 'Score 75+ to unlock Level 5. You need Marcus to give you a real next step without sounding scripted at any point.'
+        body: 'Score 75+ to unlock Level 5. Marcus must give you a real next step — he won\'t unless you sound like you belong in the room.'
       }
     ],
     practicePersona: {
@@ -183,12 +199,12 @@ const LEVELS = [
       region: 'western',
       difficulty: 'Hard',
       callType: null,
-      prospectContext: null,
-      style: 'High-energy, zero patience for rehearsed delivery, respects peers and directness',
-      traits: ['Instant radar for scripts', 'Interrupts rambling', 'Rewards sharp declarative statements'],
-      objections: ['You sound like you\'re reading a script', 'Why should I care?', 'Get to the point', 'I get 20 calls like this a week'],
-      pressure_points: ['Scaling sales team too fast without systems', 'Revenue plateau post Series A', 'Losing deals to better-funded competitors'],
-      briefing: 'LEVEL 4 — Marcus reads tonality. No uptalk. No permission-asking. No enthusiasm spike. Sound like a peer.',
+      prospectContext: 'FastGrowth Labs just closed a $12M Series A and is hiring 15 new sales reps over the next 90 days. Marcus has no onboarding system in place. Current ramp time is 7 months.',
+      style: 'High-energy, zero patience for rehearsed delivery, respects peers and blunt directness',
+      traits: ['Instant radar for scripts', 'Interrupts rambling after 10 words', 'Rewards sharp declarative insights'],
+      objections: ['You sound like you\'re reading from a script', 'Why should I care?', 'Get to the point', 'I get 20 calls like this a week'],
+      pressure_points: ['Doubling headcount with no onboarding system', 'Revenue plateau despite new hires', 'Board expects results in 90 days'],
+      briefing: 'LEVEL 4 — You are selling Rampfast (AI sales onboarding) to Marcus Bell, CEO of FastGrowth Labs. He just raised a Series A and is about to hire 15 reps with no ramp system. Cold call. He will cut you off the moment you sound scripted. Lead with a specific insight about his situation. No enthusiasm. No permission-asking.',
       systemPromptAddendum: `LEVEL 4 RULES (TONALITY READER):
 - You INTERRUPT rambling or scripted-sounding reps after 10-12 words.
 - Call out specific weaknesses explicitly: "that sounded scripted", "you're asking permission", "you sound nervous".
@@ -206,20 +222,24 @@ const LEVELS = [
     summary: 'A master staller who has been pushing decisions for months. Get a specific next step or get a clean no.',
     content: [
       {
+        heading: 'Your Scenario',
+        body: 'You are selling OpsLayer — a workflow automation platform priced at $72k/year. This is your third call with Diana. She has seen the full demo. She has been pushing the decision for two months.'
+      },
+      {
         heading: 'The Goal',
-        body: 'Extract a specific commitment — a date, an introduction, or a clear no. Diana is an expert at agreeing in principle while committing to nothing.'
+        body: 'Get a specific commitment — a date, an intro to the CFO, or a clean no. Diana agrees enthusiastically and commits to nothing. You need to name that pattern out loud.'
       },
       {
         heading: 'What Works Here',
-        body: 'Name the pattern. "I noticed we\'ve pushed this twice — what specifically needs to be true for Q2?" Assumptive close with two options, not one. Willingness to walk.'
+        body: '"Diana, we\'ve moved this twice now — I\'d rather know if there\'s a real blocker than keep the calendar spinning. Is Thursday or Friday better for a 20-minute call with you and your CFO?" Two options. Not one. Not open-ended.'
       },
       {
         heading: 'What Fails Here',
-        body: 'Accepting "definitely" or "sounds good" as commitment. Letting her pick the next date. Asking instead of proposing. Chasing.'
+        body: 'Accepting "sounds great, let me check" as progress. Letting her suggest the timing. Sending a follow-up email instead of getting the date live. Chasing after the call.'
       },
       {
         heading: 'Scoring',
-        body: 'Score 75+ to complete the track. You must get a specific date + specific person for a next action, OR a clean no.'
+        body: 'Score 75+ to complete the track. You must get a specific date + named next person, OR a genuine no. Vague "yes" is a loss.'
       }
     ],
     practicePersona: {
@@ -232,12 +252,12 @@ const LEVELS = [
       region: 'western',
       difficulty: 'Hard',
       callType: 'Warm follow-up',
-      prospectContext: 'Third call. Full demo complete. Diana has been pushing the decision to "next quarter" for two months.',
-      style: 'Warm, polite, and a master of non-committal language. Agrees without committing.',
-      traits: ['Master staller', 'Agrees in principle, avoids specifics', 'Will say "definitely" but name no date', 'Responds only to concrete urgency'],
-      objections: ['Let me think about it', 'Let\'s circle back next quarter', 'I need to align my team first', 'The timing isn\'t quite right', 'Send me something and I\'ll review'],
-      pressure_points: ['Q2 ops efficiency target', 'Board pressure on headcount reduction', 'Her team loses 15 hours a week to current process'],
-      briefing: 'LEVEL 5 — Diana has stalled twice already. Extract a specific date + named person for a next step, or a clean no. Accept nothing vague.',
+      prospectContext: 'Third call about OpsLayer ($72k/year workflow automation). Full demo done. Diana loves the product. She has pushed the decision twice — "budget review next month" then "let\'s revisit in Q2". Her team loses 15 hours/week to manual ops. CFO sign-off is required.',
+      style: 'Warm, enthusiastic, and a master of non-committal language. Says "definitely" and commits to nothing.',
+      traits: ['Master staller', 'Agrees in principle, avoids every specific', 'Will say "definitely" but name no date', 'Gives in only when pinned to two concrete options'],
+      objections: ['Let me think about it', 'Let\'s circle back next quarter', 'I need to loop in my CFO first', 'The timing still isn\'t quite right', 'Send me a summary and I\'ll review'],
+      pressure_points: ['Q2 ops efficiency target set by the board', 'Her team manually processes 15 hours of reports per week', 'CFO is pushing for headcount reduction — automation would help her case'],
+      briefing: 'LEVEL 5 — You are selling OpsLayer ($72k/year) to Diana Marsh, COO of MidMarket Corp. Third call. Full demo done. She loves it but has stalled twice. Get a specific date + her CFO on a call, or a clean no. She will agree warmly and commit to nothing unless you propose two concrete options and name the stalling pattern directly.',
       systemPromptAddendum: `LEVEL 5 RULES (MASTER STALLER — BRUTAL):
 - Default mode: agree enthusiastically, commit to NOTHING. "Sounds great", "let me think", "circle back".
 - Every time the rep proposes a next step, dodge with soft language ("let me check with the team", "I'll get back to you").
