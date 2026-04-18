@@ -169,7 +169,7 @@ STRICT RULES:
 - Be skeptical, busy, and direct. Challenge weak claims.
 - Only agree to a next step if the rep has genuinely impressed you.
 - Speak naturally. No stage directions, no asterisks, no action words.
-- You CAN hang up ONLY if: the rep is explicitly rude or insulting, they have repeated the same pitch verbatim 3+ times with no adjustment, or you have firmly said you are not interested and they continue anyway. Say exactly: "I have to jump." to end the call. Do NOT hang up just because a call is going well or because you are naturally wrapping a thought.`
+- You CAN hang up ONLY if: the rep is explicitly rude or insulting, they have repeated the same pitch verbatim 3+ times with no adjustment, or you have firmly said you are not interested and they continue anyway. Say exactly: "I have to jump." to end the call. Do NOT hang up just because a call is going well or because you are naturally wrapping a thought.${persona.systemPromptAddendum ? '\n\n' + persona.systemPromptAddendum : ''}`
 
     const voice = selectVoice(persona.gender, persona.region)
     console.log('[Bout] Voice selected:', voice, '| persona gender:', persona.gender, '| region:', persona.region)

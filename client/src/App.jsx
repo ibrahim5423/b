@@ -85,6 +85,9 @@ function App() {
   const [callHistory, setCallHistory] = useState(() => {
     try { return JSON.parse(localStorage.getItem('bout_call_history') || '[]') } catch { return [] }
   })
+  const [levelScores, setLevelScores] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('bout_level_scores') || '{}') } catch { return {} }
+  })
 
   const navigate = useNavigate()
 
@@ -102,6 +105,10 @@ function App() {
   useEffect(() => {
     try { localStorage.setItem('bout_call_history', JSON.stringify(callHistory)) } catch {}
   }, [callHistory])
+
+  useEffect(() => {
+    try { localStorage.setItem('bout_level_scores', JSON.stringify(levelScores)) } catch {}
+  }, [levelScores])
 
   function handlePersonaReady(p) { setPersona(p) }
 
@@ -128,6 +135,12 @@ function App() {
     if (pendingId) {
       setCallHistory(prev => prev.map(rec => rec.id === pendingId ? { ...rec, report: r } : rec))
       localStorage.removeItem('bout_pending_record_id')
+    }
+    if (persona?.levelId && typeof r?.overall === 'number') {
+      setLevelScores(prev => ({
+        ...prev,
+        [persona.levelId]: Math.max(prev[persona.levelId] || 0, r.overall)
+      }))
     }
   }
 
@@ -162,7 +175,7 @@ function App() {
     <div className="app-shell">
       <Routes>
         <Route path="/" element={<Setup initialPersona={persona} onPersonaReady={handlePersonaReady} />} />
-        <Route path="/learn" element={<Learn onStartPractice={handlePracticeAgainWithPersona} />} />
+        <Route path="/learn" element={<Learn onStartPractice={handlePracticeAgainWithPersona} levelScores={levelScores} />} />
         <Route path="/history" element={<CallHistory history={callHistory} onPracticeAgain={handlePracticeAgainWithPersona} />} />
         <Route path="/session" element={<Session persona={persona} onSessionEnd={handleSessionEnd} />} />
         <Route
